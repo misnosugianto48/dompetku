@@ -9,15 +9,20 @@ class Transaction extends Model
     protected $fillable = [
         'account_id',
         'category_id',
+        'asset_id',
         'amount',
         'type',
         'date',
         'description',
     ];
 
-    protected $casts = [
-        'date' => 'date',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'decimal:2',
+            'date' => 'date',
+        ];
+    }
 
     public function account()
     {
@@ -27,5 +32,10 @@ class Transaction extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function asset()
+    {
+        return $this->belongsTo(Asset::class);
     }
 }

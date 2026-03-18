@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Accounts\ApplyTransactionToAccount;
+use App\Actions\Assets\ApplyTransactionToAsset;
+use App\Actions\Transactions\CreateTransaction;
+use App\Http\Requests\StoreTransactionRequest;
 use App\Models\Account;
+use App\Models\Asset;
 use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
@@ -36,34 +42,44 @@ class TransactionController extends Controller
         return view('transactions.index', compact('transactions', 'categories', 'accounts'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $categories = Category::all();
         $accounts = Account::all();
+        $selectedAsset = null;
 
-        return view('transactions.create', compact('categories', 'accounts'));
+        if ($request->filled('asset_id')) {
+            $selectedAsset = Asset::find($request->asset_id);
+        }
+
+        return view('transactions.create', compact('categories', 'accounts', 'selectedAsset'));
     }
 
-    public function store(Request $request)
+    public function store(StoreTransactionRequest $request)
     {
-        $validated = $request->validate([
-            'account_id' => 'required|exists:accounts,id',
-            'category_id' => 'required|exists:categories,id',
-            'amount' => 'required|numeric|min:0',
-            'type' => 'required|in:income,expense',
-            'date' => 'required|date',
-            'description' => 'nullable|string|max:500',
-        ]);
+        $validated = $request->validated();
 
-        Transaction::create($validated);
+        DB::transaction(function () use ($validated) {
+            $transaction = app(CreateTransaction::class)->handle($validated);
 
-        $account = Account::findOrFail($validated['account_id']);
+            $account = Account::findOrFail($validated['account_id']);
+            app(ApplyTransactionToAccount::class)->handle($account, $validated['type'], (float) $validated['amount']);
 
-        if ($validated['type'] === 'income') {
-            $account->increment('balance', $validated['amount']);
-        } else {
-            $account->decrement('balance', $validated['amount']);
-        }
+            $assetId = $validated['asset_id'] ?? null;
+            $quantity = $validated['quantity'] ?? null;
+
+            if ($assetId !== null && $quantity !== null) {
+                $asset = Asset::findOrFail($assetId);
+
+                app(ApplyTransactionToAsset::class)->handle(
+                    $asset,
+                    $validated['type'],
+                    (float) $validated['amount'],
+                    (float) $quantity,
+                    $validated['date'],
+                );
+            }
+        });
 
         return redirect()->route('transactions.index')->with('success', 'Transaction added successfully.');
     }
@@ -73,9 +89,9 @@ class TransactionController extends Controller
         $account = $transaction->account;
 
         if ($transaction->type === 'income') {
-            $account->decrement('balance', $transaction->amount);
+            $account->decrement('balance', (float) $transaction->amount);
         } else {
-            $account->increment('balance', $transaction->amount);
+            $account->increment('balance', (float) $transaction->amount);
         }
 
         $transaction->delete();

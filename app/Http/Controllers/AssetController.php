@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAssetRequest;
+use App\Http\Requests\UpdateAssetRequest;
 use App\Models\Asset;
 use App\Models\AssetPriceHistory;
-use Illuminate\Http\Request;
 
 class AssetController extends Controller
 {
@@ -27,15 +28,9 @@ class AssetController extends Controller
         return view('assets.index', compact('assets', 'totalPortfolioValue', 'totalInvested'));
     }
 
-    public function store(Request $request)
+    public function store(StoreAssetRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|string|in:stock,gold,mutual_fund,crypto,bond',
-            'quantity' => 'required|numeric|min:0',
-            'purchase_price' => 'required|numeric|min:0',
-            'current_price' => 'required|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         $asset = Asset::create($validated);
 
@@ -48,12 +43,9 @@ class AssetController extends Controller
         return redirect()->route('assets.index')->with('success', 'Asset added successfully.');
     }
 
-    public function update(Request $request, Asset $asset)
+    public function update(UpdateAssetRequest $request, Asset $asset)
     {
-        $validated = $request->validate([
-            'current_price' => 'required|numeric|min:0',
-            'quantity' => 'required|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         $asset->update($validated);
 
