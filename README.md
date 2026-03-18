@@ -110,6 +110,29 @@ resources/views/
 └── reports/
 ```
 
+## 🤝 Contributing
+
+Contributions are welcome and greatly appreciated! Whether it's fixing bugs, adding features, improving documentation, or suggesting ideas — all contributions are valued.
+
+### How to Contribute
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/your-feature-name`)
+3. **Commit** your changes (`git commit -m 'feat: add some feature'`)
+4. **Push** to the branch (`git push origin feature/your-feature-name`)
+5. **Open** a Pull Request
+
+### Contribution Ideas
+
+- 🐛 Bug fixes and improvements
+- 🌐 Multi-language / localization support
+- 🔐 Authentication & multi-user support
+- 📊 Chart visualizations for reports
+- 📱 Mobile responsive enhancements
+- 🧪 Additional test coverage
+
+> Feel free to open an [issue](https://github.com/misnosugianto48/dompetku/issues) to discuss any changes before submitting a PR.
+
 ## 📄 License
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
