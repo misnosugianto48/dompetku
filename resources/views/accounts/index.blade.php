@@ -1,0 +1,55 @@
+@extends('layouts.app')
+@section('title', 'Accounts')
+
+@section('content')
+<div class="space-y-6">
+    <!-- Add Account Form -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6" x-data="{ open: false }">
+        <div class="flex justify-between items-center">
+            <h3 class="font-semibold text-slate-800">Your Accounts</h3>
+            <button @click="open = !open" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition shadow-sm">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                <span class="hidden sm:inline">Add Account</span>
+            </button>
+        </div>
+
+        <form method="POST" action="{{ route('accounts.store') }}" x-show="open" x-transition class="mt-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
+            @csrf
+            <input type="text" name="name" required placeholder="Account name" class="rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <select name="type" required class="rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="bank">Bank</option>
+                <option value="wallet">E-Wallet</option>
+                <option value="cash">Cash</option>
+            </select>
+            <input type="number" name="balance" required min="0" placeholder="Initial balance" class="rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <button type="submit" class="px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-xl hover:bg-slate-900 transition">Save</button>
+        </form>
+    </div>
+
+    <!-- Account Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @foreach($accounts as $account)
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="inline-block px-2 py-0.5 text-xs font-medium rounded-lg {{ $account->type === 'bank' ? 'bg-blue-50 text-blue-700' : ($account->type === 'wallet' ? 'bg-purple-50 text-purple-700' : 'bg-emerald-50 text-emerald-700') }}">
+                            {{ ucfirst($account->type) }}
+                        </span>
+                    </div>
+                    <h4 class="font-semibold text-slate-800">{{ $account->name }}</h4>
+                    <p class="text-xl font-bold text-slate-900 mt-1">Rp {{ number_format($account->balance, 0, ',', '.') }}</p>
+                    <p class="text-xs text-slate-400 mt-1">{{ $account->transactions_count }} transactions</p>
+                </div>
+                <form action="{{ route('accounts.destroy', $account) }}" method="POST" onsubmit="return confirm('Delete this account and all its transactions?')">
+                    @csrf @method('DELETE')
+                    <button class="text-slate-300 hover:text-rose-500 transition">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endsection
