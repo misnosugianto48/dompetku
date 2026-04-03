@@ -1,23 +1,50 @@
 # 💰 Dompetku
 
-**Dompetku** (Indonesian for "My Wallet") is a personal finance management web application built with Laravel. Track your income, expenses, accounts, and assets — all in one place.
+**Dompetku** (Indonesian for "My Wallet") is a premium personal finance management web application built with Laravel. Track your income, expenses, accounts, assets, and budgets — all in one secure, unified platform.
 
-## ✨ Features
+## ✨ Core Features
 
-- **Dashboard** — Overview of total balance, monthly income & expenses, asset value, and recent transactions
-- **Transaction Management** — Record income & expense transactions with categories
-- **Account Management** — Manage multiple accounts (bank, cash, e-wallet, etc.) with custom icons and colors
-- **Asset Tracking** — Track assets with purchase price, current price, and price history
-- **Reports** — Filter financial reports by period (daily, weekly, monthly, yearly) with category breakdowns
-- **PDF Export** — Export financial reports as PDF
+### 📊 Dashboard & Insights (Phase 2 & 3)
 
-## 🛠 Tech Stack
+- **Interactive Charts** — Real-time Cash Flow and Expense Breakdown visualizations using Chart.js.
+- **Net Worth Tracking** — Automated historical wealth scale trajectory with interactive area charts.
+- **Budget Monitoring** — Visual progress tracking per category with automated limits and alerts.
+- **Quick Add** — Streamlined transaction recording directly from the dashboard.
 
-- **Backend:** PHP 8.2, Laravel 12
-- **Database:** PostgreSQL (Neon)
-- **Frontend:** Blade templates, Tailwind CSS v4, Vite
-- **PDF Generation:** barryvdh/laravel-dompdf
-- **Testing:** Pest v3
+### 💸 Transaction & Account Management (Phase 1)
+
+- **Multi-Account Support** — Manage Banks, Cash, and E-Wallets with custom identifiers.
+- **Transfers** — Seamlessly move funds between accounts with automated balance adjustments.
+- **High-Precision Decimals** — Robust handling of currency values using decimal casting.
+- **Advanced Filtering** — Search transactions by description, notes, categories, or date ranges.
+
+### 🔄 Automation & Safety (Phase 3 & 4)
+
+- **Recurring Transactions** — Set up daily, weekly, monthly, or yearly automated entries.
+- **Daemon Processing** — Scheduled background commands to process recurring entries silently.
+- **Authentication** — Secure, private access powered by Laravel Breeze with customized premium UI.
+- **CSV Import/Export** — Move your data in and out of the system with robust mapping logic.
+- **Automated Reports** — Scheduled PDF financial summaries dispatched directly to your email.
+
+## 🛠 Tech Stack & Standards
+
+- **Framework:** PHP 8.2+, [Laravel 12](https://laravel.com) (Latest)
+- **Database:** PostgreSQL (Optimized for Neon/Cloud environments)
+- **Frontend:** [Tailwind CSS v4](https://tailwindcss.com/) (Next-gen), Vite 7, Blade, Alpha.js
+- **Visualization:** Chart.js
+- **Reporting:** DomPDF (PDF Generation)
+- **Testing:** [Pest v3](https://pestphp.com/) (Modern testing framework)
+- **Formatting:** Laravel Pint (Strict PSR-12+ standards)
+
+## 🔐 Security & Reliability
+
+Dompetku is built with a security-first mindset, adhering to modern industry standards:
+
+- **Authentication:** Protected by standard-grade middleware and secure hashing.
+- **Mass Assignment Protection:** All models use `$fillable` whitelisting to prevent unauthorized data injection.
+- **CSRF & XSS Protection:** Native Laravel safeguards applied across all forms and views.
+- **Database Atomicity:** Critical operations (Transfers, Recurring Entries) are wrapped in **SQL Transactions** to prevent data inconsistency.
+- **Input Validation:** Strict `FormRequest` validation for every incoming request.
 
 ## 🚀 Getting Started
 
@@ -30,109 +57,47 @@
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone & Install**
+
    ```bash
    git clone https://github.com/misnosugianto48/dompetku.git
    cd dompetku
-   ```
-
-2. **Install dependencies**
-   ```bash
    composer install
    npm install
    ```
 
-3. **Configure environment**
+2. **Configure Environment**
+
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
-   Update `.env` with your database credentials:
-   ```env
-   DB_CONNECTION=pgsql
-   DB_HOST=your-db-host
-   DB_PORT=5432
-   DB_DATABASE=dompetku
-   DB_USERNAME=your-username
-   DB_PASSWORD=your-password
-   ```
 
-4. **Run migrations and seed the database**
+   Update `.env` with your DB credentials and SMTP settings for reports.
+
+3. **Database Initialization**
+
    ```bash
    php artisan migrate --seed
    ```
 
-5. **Build frontend assets**
+   *Note: Default credentials are provided in `DatabaseSeeder.php`.*
+
+4. **Build & Run**
+
    ```bash
    npm run build
-   ```
-
-6. **Start the development server**
-   ```bash
    php artisan serve
    ```
-   The app will be available at `http://localhost:8000`.
 
-### Development
+## 📁 Architecture Overview
 
-For hot-reloading during development:
+- **`app/Actions`** — Encapsulated business logic for complex operations like transaction creation and asset adjustments.
+- **`app/Console/Commands`** — Background workers for processing recurring transactions and sending reports.
+- **`app/Http/Requests`** — Centralized validation rules for maintaining data integrity.
+- **`app/Mail`** — Mailable classes for automated PDF report delivery.
+- **`resources/views/components`** — Reusable UI primitives for forms, navigation, and layouts.
 
-```bash
-# Terminal 1
-php artisan serve
+## 🤝 License
 
-# Terminal 2
-npm run dev
-```
-
-## 📁 Project Structure
-
-```
-app/
-├── Http/Controllers/
-│   ├── DashboardController.php
-│   ├── TransactionController.php
-│   ├── AccountController.php
-│   ├── AssetController.php
-│   └── ReportController.php
-├── Models/
-│   ├── Account.php
-│   ├── Asset.php
-│   ├── AssetPriceHistory.php
-│   ├── Category.php
-│   └── Transaction.php
-resources/views/
-├── layouts/
-├── dashboard.blade.php
-├── transactions/
-├── accounts/
-├── assets/
-└── reports/
-```
-
-## 🤝 Contributing
-
-Contributions are welcome and greatly appreciated! Whether it's fixing bugs, adding features, improving documentation, or suggesting ideas — all contributions are valued.
-
-### How to Contribute
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/your-feature-name`)
-3. **Commit** your changes (`git commit -m 'feat: add some feature'`)
-4. **Push** to the branch (`git push origin feature/your-feature-name`)
-5. **Open** a Pull Request
-
-### Contribution Ideas
-
-- 🐛 Bug fixes and improvements
-- 🌐 Multi-language / localization support
-- 🔐 Authentication & multi-user support
-- 📊 Chart visualizations for reports
-- 📱 Mobile responsive enhancements
-- 🧪 Additional test coverage
-
-> Feel free to open an [issue](https://github.com/misnosugianto48/dompetku/issues) to discuss any changes before submitting a PR.
-
-## 📄 License
-
-This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
