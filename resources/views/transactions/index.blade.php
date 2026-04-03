@@ -2,15 +2,35 @@
 @section('title', 'Transactions')
 
 @section('actions')
-@section('actions')
-<a href="{{ route('transactions.transfer') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-xl hover:bg-slate-900 transition shadow-sm">
-    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
-    <span class="hidden sm:inline">Transfer</span>
-</a>
-<a href="{{ route('transactions.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition shadow-sm">
-    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-    <span class="hidden sm:inline">Add</span>
-</a>
+<div class="flex flex-wrap items-center gap-2">
+    <!-- Import Form (Hidden) -->
+    <form action="{{ route('transactions.import') }}" method="POST" enctype="multipart/form-data" class="hidden">
+        @csrf
+        <input type="file" name="csv_file" id="import-csv" accept=".csv" onchange="this.form.submit()">
+    </form>
+    
+    <button onclick="document.getElementById('import-csv').click()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-white text-slate-700 text-sm font-medium rounded-xl border border-slate-200 hover:bg-slate-50 transition shadow-sm">
+        <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+        <span class="hidden sm:inline">Import</span>
+    </button>
+    
+    <a href="{{ route('transactions.export') }}" class="inline-flex items-center gap-1.5 px-3 py-2 bg-white text-slate-700 text-sm font-medium rounded-xl border border-slate-200 hover:bg-slate-50 transition shadow-sm">
+        <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+        <span class="hidden sm:inline">Export</span>
+    </a>
+
+    <!-- Divider -->
+    <div class="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
+
+    <a href="{{ route('transactions.transfer') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-xl hover:bg-slate-900 transition shadow-sm">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+        <span class="hidden sm:inline">Transfer</span>
+    </a>
+    <a href="{{ route('transactions.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition shadow-sm">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+        <span class="hidden sm:inline">Add</span>
+    </a>
+</div>
 @endsection
 
 @section('content')
@@ -89,6 +109,15 @@
                         </td>
                         <td class="px-4 sm:px-6 py-3 whitespace-nowrap text-right">
                             <div class="flex items-center justify-end gap-2 text-slate-400">
+                                <a href="{{ route('transactions.create', [
+                                    'type' => $t->type,
+                                    'amount' => (int) $t->amount,
+                                    'category_id' => $t->category_id,
+                                    'account_id' => $t->account_id,
+                                    'description' => $t->description
+                                ]) }}" class="hover:text-emerald-600 transition" title="Duplicate">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                </a>
                                 <a href="{{ route('transactions.edit', $t) }}" class="hover:text-indigo-600 transition" title="Edit">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                 </a>

@@ -4,8 +4,8 @@
 @section('content')
 <div class="max-w-2xl mx-auto">
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8" x-data="{
-        type: '{{ old('type', $selectedAsset ? ($selectedAsset->type === 'mutual_fund' ? 'expense' : 'expense') : 'expense') }}',
-        amount: '{{ old('amount') }}',
+        type: '{{ old('type', $selectedAsset ? ($selectedAsset->type === 'mutual_fund' ? 'expense' : 'expense') : request('type', 'expense')) }}',
+        amount: '{{ old('amount', request('amount')) }}',
         quantity: '{{ old('quantity') }}',
         assetId: @js($selectedAsset?->id),
     }" x-init="amount = DompetkuNumberFormat.formatNumber(amount)">
@@ -45,7 +45,7 @@
                     @foreach($categories->groupBy('type') as $catType => $cats)
                         <optgroup label="{{ ucfirst($catType) }}">
                             @foreach($cats as $cat)
-                                <option value="{{ $cat->id }}" {{ ($selectedAsset?->type === 'mutual_fund' && $cat->name === 'Investasi') || old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                <option value="{{ $cat->id }}" {{ ($selectedAsset?->type === 'mutual_fund' && $cat->name === 'Investasi') || old('category_id', request('category_id')) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                             @endforeach
                         </optgroup>
                     @endforeach
@@ -53,7 +53,7 @@
 
                 <x-form.select label="Account" name="account_id" required>
                     @foreach($accounts as $acc)
-                        <option value="{{ $acc->id }}" {{ old('account_id') == $acc->id ? 'selected' : '' }}>{{ $acc->name }} (Rp {{ number_format($acc->balance, 0, ',', '.') }})</option>
+                        <option value="{{ $acc->id }}" {{ old('account_id', request('account_id')) == $acc->id ? 'selected' : '' }}>{{ $acc->name }} (Rp {{ number_format($acc->balance, 0, ',', '.') }})</option>
                     @endforeach
                 </x-form.select>
 
@@ -78,7 +78,7 @@
 
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Description</label>
-                <textarea name="description" rows="2" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Optional description...">{{ old('description', $selectedAsset ? 'Repeat order for ' . $selectedAsset->name : '') }}</textarea>
+                <textarea name="description" rows="2" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Optional description...">{{ old('description', request('description', $selectedAsset ? 'Repeat order for ' . $selectedAsset->name : '')) }}</textarea>
             </div>
 
             <x-ui.errors />

@@ -17,9 +17,9 @@ class ReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        [$start, $end] = $this->resolveDateRange($period, $startDate, $endDate);
+        [$start, $end] = self::resolveDateRange($period, $startDate, $endDate);
 
-        $data = $this->getReportData($start, $end);
+        $data = self::getReportData($start, $end);
         $data['period'] = $period;
         $data['startDate'] = $start;
         $data['endDate'] = $end;
@@ -33,9 +33,9 @@ class ReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        [$start, $end] = $this->resolveDateRange($period, $startDate, $endDate);
+        [$start, $end] = self::resolveDateRange($period, $startDate, $endDate);
 
-        $data = $this->getReportData($start, $end);
+        $data = self::getReportData($start, $end);
         $data['period'] = $period;
         $data['startDate'] = $start;
         $data['endDate'] = $end;
@@ -48,7 +48,7 @@ class ReportController extends Controller
     /**
      * @return array{Carbon, Carbon}
      */
-    private function resolveDateRange(string $period, ?string $startDate, ?string $endDate): array
+    public static function resolveDateRange(string $period, ?string $startDate, ?string $endDate): array
     {
         if ($startDate && $endDate) {
             return [Carbon::parse($startDate), Carbon::parse($endDate)];
@@ -66,7 +66,7 @@ class ReportController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function getReportData(Carbon $start, Carbon $end): array
+    public static function getReportData(Carbon $start, Carbon $end): array
     {
         $transactions = Transaction::with(['account', 'category'])
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])

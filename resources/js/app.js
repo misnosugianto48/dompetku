@@ -1,8 +1,7 @@
 import './bootstrap';
 
-import { formatNumber, getRaw } from './lib/numberFormat';
+import Alpine from 'alpinejs';
 
-window.DompetkuNumberFormat = {
-    formatNumber,
-    getRaw,
-};
+window.Alpine = Alpine;
+
+Alpine.start();

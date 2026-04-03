@@ -1,7 +1,6 @@
 <?php
 
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /*
@@ -16,16 +15,7 @@ use Tests\TestCase;
 */
 
 pest()->extend(TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
-
-uses()
-    ->beforeEach(function () {
-        $this->withoutMiddleware([
-            ValidateCsrfToken::class,
-            VerifyCsrfToken::class,
-        ]);
-    })
+    ->use(RefreshDatabase::class)
     ->in('Feature');
 
 /*

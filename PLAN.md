@@ -72,6 +72,22 @@ Reduce manual work for recurring operations.
 - "Duplicate" button on each transaction row
 - Pre-fills the create form with copied data (date set to today)
 
+### 3.4 — 📧 Automatic Monthly Financial Report (Resend Email Integration)
+
+The system will generate automatic a pdf report containing:
+
+- Total income for this month
+- Total expenses
+- Net cash flow
+- Breakdown of expense categories
+- Graph (optional: attach image/PDF)
+
+### 3.5 — User Settings
+
+Add settings:
+
+- Enable/disable email reports
+- Select send date (end of the month / beginning of the month)
 ---
 
 ## Phase 4: Data Safety & Multi-Device 🔐

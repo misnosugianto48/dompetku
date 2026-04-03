@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\Budget;
+use App\Models\Category;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -113,6 +114,9 @@ class DashboardController extends Controller
         ksort($netWorthData);
         ksort($netWorthLabels);
 
+        $formCategories = Category::all();
+        $formAccounts = Account::all();
+
         return view('dashboard', compact(
             'totalBalance',
             'monthlyIncome',
@@ -127,7 +131,9 @@ class DashboardController extends Controller
             'expenseColors',
             'budgets',
             'netWorthData',
-            'netWorthLabels'
+            'netWorthLabels',
+            'formCategories',
+            'formAccounts'
         ));
     }
 }
