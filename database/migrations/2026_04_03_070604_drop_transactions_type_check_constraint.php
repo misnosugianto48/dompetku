@@ -9,8 +9,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Drop the constraint if it exists (mostly for postgres/sqlite)
-        DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS transactions_type_check');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS transactions_type_check');
+        }
     }
 
     /**
@@ -18,7 +19,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Optionally recreate if reverting
-        DB::statement("ALTER TABLE transactions ADD CONSTRAINT transactions_type_check CHECK (type::text = ANY (ARRAY['income'::character varying, 'expense'::character varying]::text[]))");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE transactions ADD CONSTRAINT transactions_type_check CHECK (type::text = ANY (ARRAY['income'::character varying, 'expense'::character varying]::text[]))");
+        }
     }
 };

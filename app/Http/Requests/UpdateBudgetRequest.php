@@ -23,7 +23,7 @@ class UpdateBudgetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => ['required', 'exists:categories,id', 'unique:budgets,category_id,'.clone $this->route('budget')->id],
+            'category_id' => ['required', 'exists:categories,id', 'unique:budgets,category_id,'.$this->route('budget')->id],
             'amount' => ['required', 'numeric', 'min:0'],
         ];
     }

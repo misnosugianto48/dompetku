@@ -79,7 +79,7 @@ class DashboardController extends Controller
         // 3. Budgets Tracking (Current Month)
         $budgets = Budget::with('category')->get()->map(function ($budget) use ($categoryExpenses) {
             $expenseObj = $categoryExpenses->firstWhere('category_id', $budget->category_id);
-            $spent = $expenseObj ? clone $expenseObj->total : 0;
+            $spent = $expenseObj ? $expenseObj->total : 0;
             $budget->spent = (float) $spent;
             $budget->percentage = $budget->amount > 0 ? min(100, round(($budget->spent / $budget->amount) * 100)) : 0;
 
