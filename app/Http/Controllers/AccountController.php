@@ -27,6 +27,24 @@ class AccountController extends Controller
         return redirect()->route('accounts.index')->with('success', 'Account created successfully.');
     }
 
+    public function edit(Account $account)
+    {
+        return view('accounts.edit', compact('account'));
+    }
+
+    public function update(Request $request, Account $account)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|string|in:bank,wallet,cash',
+            'balance' => 'required|numeric|min:0',
+        ]);
+
+        $account->update($validated);
+
+        return redirect()->route('accounts.index')->with('success', 'Account updated successfully.');
+    }
+
     public function destroy(Account $account)
     {
         $account->delete();

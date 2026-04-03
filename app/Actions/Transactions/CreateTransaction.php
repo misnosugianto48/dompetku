@@ -22,12 +22,14 @@ class CreateTransaction
     {
         return Transaction::create(Arr::only($data, [
             'account_id',
+            'destination_account_id',
             'category_id',
             'asset_id',
             'amount',
             'type',
             'date',
             'description',
+            'notes',
         ]));
     }
 }

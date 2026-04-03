@@ -14,6 +14,8 @@ class ApplyTransactionToAccount
             return;
         }
 
-        $account->decrement('balance', $amount);
+        if ($type === 'expense' || $type === 'transfer') {
+            $account->decrement('balance', $amount);
+        }
     }
 }
