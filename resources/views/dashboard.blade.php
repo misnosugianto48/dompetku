@@ -45,6 +45,45 @@
         </div>
     </div>
 
+    <!-- Quick Add Form -->
+    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 sm:p-5 shadow-sm" x-data="{ type: 'expense', amount: '' }" x-init="amount = DompetkuNumberFormat.formatNumber(amount)">
+        <h3 class="font-semibold text-indigo-900 mb-3 flex items-center gap-2 text-sm">
+            <svg class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            Quick Add
+        </h3>
+        <form method="POST" action="{{ route('transactions.store') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+            @csrf
+            <div>
+                <select name="type" x-model="type" class="w-full rounded-xl border-indigo-200 text-sm focus:ring-indigo-500 bg-white py-2">
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                </select>
+            </div>
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">Rp</span>
+                <input type="text" x-model="amount" @input="amount = DompetkuNumberFormat.formatNumber($event.target.value)" required class="w-full pl-9 rounded-xl border-indigo-200 text-sm font-semibold focus:ring-indigo-500 bg-white py-2" placeholder="0.00">
+                <input type="hidden" name="amount" :value="DompetkuNumberFormat.getRaw(amount)">
+            </div>
+            <div>
+                <select name="account_id" required class="w-full rounded-xl border-indigo-200 text-sm focus:ring-indigo-500 bg-white py-2">
+                    @foreach($formAccounts as $acc)
+                        <option value="{{ $acc->id }}">{{ $acc->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <select name="category_id" required class="w-full rounded-xl border-indigo-200 text-sm focus:ring-indigo-500 bg-white py-2">
+                    @foreach($formCategories as $cat)
+                        <option value="{{ $cat->id }}" x-show="type === '{{ $cat->type }}'">{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 rounded-xl transition shadow-sm">Save</button>
+            </div>
+        </form>
+    </div>
+
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Bar Chart -->

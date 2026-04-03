@@ -21,6 +21,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - pestphp/pest (PEST) - v3
 - phpunit/phpunit (PHPUNIT) - v11
 - tailwindcss (TAILWINDCSS) - v4
+- alpinejs (ALPINEJS) - v3
 
 ## Skills Activation
 

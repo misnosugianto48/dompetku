@@ -8,6 +8,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    $this->user = User::factory()->create();
+    $this->actingAs($this->user);
+});
+
 test('example', function () {
     $response = $this->get('/');
 
@@ -36,7 +41,7 @@ it('updates asset quantity and price when a linked transaction is created', func
         'platform' => 'Nanovest',
     ]);
 
-    $response = $this->actingAs($user)->post(route('transactions.store'), [
+    $response = $this->actingAs($user)->withoutMiddleware()->post(route('transactions.store'), [
         'account_id' => $account->id,
         'category_id' => $category->id,
         'asset_id' => $asset->id,

@@ -3,9 +3,14 @@
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    $this->actingAs(User::factory()->create());
+});
 
 it('stores an expense transaction without an asset and updates account balance', function () {
     $account = Account::create([
@@ -20,7 +25,7 @@ it('stores an expense transaction without an asset and updates account balance',
         'color' => '#000000',
     ]);
 
-    $response = $this->post(route('transactions.store'), [
+    $response = $this->withoutMiddleware()->post(route('transactions.store'), [
         'account_id' => $account->id,
         'category_id' => $category->id,
         'amount' => 250000,
@@ -56,7 +61,7 @@ it('stores an income transaction without an asset and updates account balance', 
         'color' => '#000000',
     ]);
 
-    $response = $this->post(route('transactions.store'), [
+    $response = $this->withoutMiddleware()->post(route('transactions.store'), [
         'account_id' => $account->id,
         'category_id' => $category->id,
         'amount' => 500000,

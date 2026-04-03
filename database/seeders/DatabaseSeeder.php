@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
     {
         // Admin User
         User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('password'),
+            'name' => config('app.admin.name'),
+            'email' => config('app.admin.email'),
+            'password' => bcrypt(config('app.admin.password')),
         ]);
 
         // Default Accounts
@@ -38,5 +38,10 @@ class DatabaseSeeder extends Seeder
         Category::create(['name' => 'Bills', 'type' => 'expense', 'icon' => 'receipt-refund', 'color' => '#6366f1']);
         Category::create(['name' => 'Health', 'type' => 'expense', 'icon' => 'heart', 'color' => '#ef4444']);
         Category::create(['name' => 'Entertainment', 'type' => 'expense', 'icon' => 'sparkles', 'color' => '#8b5cf6']);
+
+        $this->call([
+            BudgetSeeder::class,
+            RecurringTransactionSeeder::class,
+        ]);
     }
 }
