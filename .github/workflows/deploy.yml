@@ -84,13 +84,39 @@ jobs:
 
     - name: Execute Remote Post-Deployment Commands
       uses: appleboy/ssh-action@master
+      env:
+        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
       with:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.REMOTE_PORT || '22' }}
+        envs: GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT_URI
         script: |
           cd ${{ secrets.REMOTE_TARGET_DIR }}
+          
+          # Helper to safely set/update env variables in .env file
+          upsert_env_var() {
+            local key=$1
+            local value=$2
+            if grep -q "^${key}=" .env; then
+              sed -i "s|^${key}=.*|${key}=${value}|" .env
+            else
+              echo "${key}=${value}" >> .env
+            fi
+          }
+          
+          # Ensure .env exists
+          if [ ! -f .env ]; then
+            cp .env.example .env
+          fi
+          
+          # Inject Google credentials if provided
+          if [ -n "$GOOGLE_CLIENT_ID" ]; then upsert_env_var "GOOGLE_CLIENT_ID" "$GOOGLE_CLIENT_ID"; fi
+          if [ -n "$GOOGLE_CLIENT_SECRET" ]; then upsert_env_var "GOOGLE_CLIENT_SECRET" "$GOOGLE_CLIENT_SECRET"; fi
+          if [ -n "$GOOGLE_REDIRECT_URI" ]; then upsert_env_var "GOOGLE_REDIRECT_URI" "$GOOGLE_REDIRECT_URI"; fi
           
           # Put application in maintenance mode (optional, uncomment if desired)
           # php artisan down || true
