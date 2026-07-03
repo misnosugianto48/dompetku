@@ -37,13 +37,11 @@ test('google callback logs in existing user', function () {
     expect($user->fresh()->google_id)->toBe('google-id-123');
 });
 
-test('google callback registers admin user if email matches config', function () {
-    config(['app.admin.email' => 'admin@devmisno.web.id']);
-
+test('google callback registers and logs in a new user', function () {
     $googleUserMock = Mockery::mock('Laravel\Socialite\Two\User');
     $googleUserMock->shouldReceive('getId')->andReturn('google-id-456');
-    $googleUserMock->shouldReceive('getEmail')->andReturn('admin@devmisno.web.id');
-    $googleUserMock->shouldReceive('getName')->andReturn('Admin User');
+    $googleUserMock->shouldReceive('getEmail')->andReturn('newuser@example.com');
+    $googleUserMock->shouldReceive('getName')->andReturn('New User');
 
     $socialiteMock = Mockery::mock('Laravel\Socialite\Contracts\Provider');
     $socialiteMock->shouldReceive('user')->once()->andReturn($googleUserMock);
@@ -55,28 +53,8 @@ test('google callback registers admin user if email matches config', function ()
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
 
-    $user = User::where('email', 'admin@devmisno.web.id')->first();
+    $user = User::where('email', 'newuser@example.com')->first();
     expect($user)->not->toBeNull();
     expect($user->google_id)->toBe('google-id-456');
     expect($user->password)->toBeNull();
-});
-
-test('google callback rejects unregistered user if email does not match admin email', function () {
-    config(['app.admin.email' => 'admin@devmisno.web.id']);
-
-    $googleUserMock = Mockery::mock('Laravel\Socialite\Two\User');
-    $googleUserMock->shouldReceive('getId')->andReturn('google-id-789');
-    $googleUserMock->shouldReceive('getEmail')->andReturn('intruder@example.com');
-    $googleUserMock->shouldReceive('getName')->andReturn('Intruder');
-
-    $socialiteMock = Mockery::mock('Laravel\Socialite\Contracts\Provider');
-    $socialiteMock->shouldReceive('user')->once()->andReturn($googleUserMock);
-
-    Socialite::shouldReceive('driver')->with('google')->once()->andReturn($socialiteMock);
-
-    $response = $this->get('/login/google/callback');
-
-    $this->assertGuest();
-    $response->assertRedirect(route('login'));
-    $response->assertSessionHasErrors('email');
 });

@@ -41,18 +41,12 @@ class GoogleController extends Controller
                 ]);
             }
         } else {
-            if ($googleUser->getEmail() === config('app.admin.email')) {
-                $user = User::create([
-                    'name' => $googleUser->getName() ?? 'Admin',
-                    'email' => $googleUser->getEmail(),
-                    'google_id' => $googleUser->getId(),
-                    'password' => null,
-                ]);
-            } else {
-                return redirect()->route('login')->withErrors([
-                    'email' => 'Unauthorized user. Registration is disabled.',
-                ]);
-            }
+            $user = User::create([
+                'name' => $googleUser->getName() ?? 'User',
+                'email' => $googleUser->getEmail(),
+                'google_id' => $googleUser->getId(),
+                'password' => null,
+            ]);
         }
 
         Auth::login($user);
