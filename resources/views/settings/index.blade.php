@@ -37,5 +37,29 @@
             </div>
         </form>
     </div>
+
+    <!-- Danger Zone Card -->
+    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] border border-rose-100/50 mt-8">
+        <h2 class="text-xl font-bold text-rose-800 mb-6 flex items-center gap-2">
+            <svg class="h-6 w-6 text-rose-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            Danger Zone
+        </h2>
+        <p class="text-sm text-slate-500 mb-8 border-b border-slate-100 pb-6">Perform destructive actions on your account database. These operations cannot be undone, please proceed with caution.</p>
+        
+        <div class="p-5 rounded-2xl bg-rose-50/50 border border-rose-100/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex-1">
+                <h4 class="font-bold text-rose-900">Reset Application Database</h4>
+                <p class="text-sm font-medium text-slate-500 mt-1">Clears all transaction logs, asset holdings, budgets, custom accounts, categories, and tags. Restores default accounts and categories.</p>
+            </div>
+            <form action="{{ route('settings.clear-data') }}" method="POST" onsubmit="return confirm('WARNING: This will delete ALL transactions, assets, budgets, custom accounts, categories, and tags. Default categories/accounts will be re-seeded. This cannot be undone. Are you absolutely sure?');">
+                @csrf
+                <button type="submit" class="w-full sm:w-auto px-5 py-3 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-sm uppercase tracking-wide rounded-xl shadow-lg shadow-rose-200 transition whitespace-nowrap">
+                    Clear All Data
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection
