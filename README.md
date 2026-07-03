@@ -20,9 +20,9 @@
 
 ### 🔄 Automation & Safety (Phase 3 & 4)
 
+- **Authentication & Google OAuth** — Secure private access powered by Laravel Breeze and Google OAuth via Laravel Socialite, featuring auto-linkage and secure registration.
 - **Recurring Transactions** — Set up daily, weekly, monthly, or yearly automated entries.
 - **Daemon Processing** — Scheduled background commands to process recurring entries silently.
-- **Authentication** — Secure, private access powered by Laravel Breeze with customized premium UI.
 - **CSV Import/Export** — Move your data in and out of the system with robust mapping logic.
 - **Automated Reports** — Scheduled PDF financial summaries dispatched directly to your email.
 
@@ -73,7 +73,12 @@ Dompetku is built with a security-first mindset, adhering to modern industry sta
    php artisan key:generate
    ```
 
-   Update `.env` with your DB credentials and SMTP settings for reports.
+   Update `.env` with your database credentials, Google OAuth keys, and SMTP settings for reports:
+   ```env
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   GOOGLE_REDIRECT_URI="${APP_URL}/login/google/callback"
+   ```
 
 3. **Database Initialization**
 
@@ -89,6 +94,31 @@ Dompetku is built with a security-first mindset, adhering to modern industry sta
    npm run build
    php artisan serve
    ```
+
+## 🔄 CI/CD & Deployment Workflow System
+
+Dompetku includes an automated CI/CD pipeline powered by GitHub Actions. Every push to the `main` branch triggers an automated testing and deployment workflow.
+
+### Pipeline Steps (`.github/workflows/deploy.yml`)
+1. **Pest Test Execution:** Spawns a PostgreSQL service container, installs dependencies, disables SSL mode (`DB_SSLMODE: disable`), runs database migrations, and executes all Pest feature and unit tests.
+2. **Production Build:** Installs production composer dependencies (with `--no-dev --optimize-autoloader`) and compiles assets using Vite (`npm run build`).
+3. **Rsync Deployment:** Syncs the codebase to the production shared hosting server using Rsync over SSH, excluding development-only files (e.g. `.git`, `.github`, `node_modules`, `.env`, and `tests/`).
+4. **Environment Secrets Injection:** Dynamically injects/updates configuration variables (like Google OAuth credentials) from GitHub Secrets into the production `.env` file.
+5. **Post-Deployment Optimizations:** Runs database migrations (`migrate --force`) and caches Laravel configurations, routes, views, and events to ensure maximum performance.
+
+### Required GitHub Secrets
+To enable the deployment workflow, configure the following secrets in your GitHub repository (**Settings > Secrets and variables > Actions**):
+
+| Secret Name | Description | Example |
+|-------------|-------------|---------|
+| `SSH_PRIVATE_KEY` | SSH Private Key (without passphrase) authorized on the server | `-----BEGIN OPENSSH PRIVATE KEY-----...` |
+| `REMOTE_HOST` | Target server IP or domain | `123.45.67.89` |
+| `REMOTE_USER` | SSH Username for the server | `u12345678` |
+| `REMOTE_TARGET_DIR`| Target directory path on the server | `/home/u12345678/public_html` |
+| `REMOTE_PORT` | SSH Port (optional, defaults to `22`) | `2222` |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID | `12345-abcde.apps.googleusercontent.com` |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | `GOCSPX-abcdef...` |
+| `GOOGLE_REDIRECT_URI` | Google OAuth Callback URL | `https://yourdomain.com/login/google/callback` |
 
 ## 📁 Architecture Overview
 
