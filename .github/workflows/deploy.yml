@@ -51,6 +51,7 @@ jobs:
         DB_DATABASE: dompetku_test
         DB_USERNAME: postgres
         DB_PASSWORD: password
+        DB_SSLMODE: disable
       run: php artisan test --compact
 
     - name: Install Production Composer Dependencies
