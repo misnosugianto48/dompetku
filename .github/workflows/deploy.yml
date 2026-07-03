@@ -1,0 +1,104 @@
+name: Deploy Dompetku to Shared Hosting
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: dompetku_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+        coverage: none
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Install Composer Dependencies (Dev)
+      run: composer install --no-ansi --no-interaction --no-progress --prefer-dist
+
+    - name: Generate Key
+      run: php artisan key:generate
+
+    - name: Run Pest Tests
+      env:
+        DB_CONNECTION: pgsql
+        DB_HOST: 127.0.0.1
+        DB_PORT: 5432
+        DB_DATABASE: dompetku_test
+        DB_USERNAME: postgres
+        DB_PASSWORD: password
+      run: php artisan test --compact
+
+    - name: Install Production Composer Dependencies
+      run: |
+        composer install --no-dev --no-ansi --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install NPM dependencies & Build Assets
+      run: |
+        npm ci
+        npm run build
+
+    - name: Deploy to Server via Rsync SSH
+      uses: easingthemes/ssh-deploy@main
+      with:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        ARGS: "-rlgoDzvc -i --delete"
+        SOURCE: "./"
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+        REMOTE_USER: ${{ secrets.REMOTE_USER }}
+        TARGET: ${{ secrets.REMOTE_TARGET_DIR }}
+        EXCLUDE: "/.git/, /.github/, /node_modules/, /.env, /storage/framework/cache/data/*, /storage/framework/sessions/*, /storage/framework/views/*.php, /storage/logs/*, /tests/"
+
+    - name: Execute Remote Post-Deployment Commands
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ${{ secrets.REMOTE_TARGET_DIR }}
+          
+          # Put application in maintenance mode (optional, uncomment if desired)
+          # php artisan down || true
+          
+          # Run database migrations
+          php artisan migrate --force
+          
+          # Clear and optimize caches
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan event:cache
+          
+          # Bring application back up (optional, uncomment if down was used)
+          # php artisan up || true
