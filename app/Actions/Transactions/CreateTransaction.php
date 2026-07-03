@@ -25,11 +25,13 @@ class CreateTransaction
             'destination_account_id',
             'category_id',
             'asset_id',
+            'quantity',
             'amount',
             'type',
             'date',
             'description',
             'notes',
+            'savings_goal_id',
         ]));
     }
 }

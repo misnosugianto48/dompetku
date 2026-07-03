@@ -21,6 +21,8 @@ class ImportController extends Controller
         $header = fgetcsv($handle);
 
         if (! $header || ! in_array('ID', $header)) {
+            fclose($handle);
+
             return back()->with('error', 'Invalid CSV format natively parsed. Ensure it originates from the Dompetku Export generator.');
         }
 
@@ -58,6 +60,7 @@ class ImportController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            fclose($handle);
 
             return back()->with('error', 'Import failed gracefully natively: '.$e->getMessage());
         }

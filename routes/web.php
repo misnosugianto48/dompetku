@@ -10,7 +10,9 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecurringTransactionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SavingsGoalController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('accounts', AccountController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::resource('assets', AssetController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('categories', CategoryController::class);
+    Route::resource('tags', TagController::class)->except(['create', 'show']);
+    Route::resource('savings-goals', SavingsGoalController::class)->except(['create', 'show']);
     Route::resource('budgets', BudgetController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('recurring', RecurringTransactionController::class)->except(['create', 'edit', 'show']);
     Route::patch('recurring/{recurring}/toggle', [RecurringTransactionController::class, 'toggle'])->name('recurring.toggle');

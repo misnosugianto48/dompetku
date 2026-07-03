@@ -11,6 +11,72 @@
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div class="space-y-6">
+    <!-- Date Range Picker -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5" x-data="{
+        startDate: '{{ $startDate }}',
+        endDate: '{{ $endDate }}',
+        setPreset(preset) {
+            const today = new Date();
+            let start, end;
+            if (preset === 'this_week') {
+                const day = today.getDay();
+                const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+                start = new Date(new Date(today).setDate(diff));
+                end = new Date();
+            } else if (preset === 'this_month') {
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            } else if (preset === 'last_month') {
+                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                end = new Date(today.getFullYear(), today.getMonth(), 0);
+            } else if (preset === 'last_30_days') {
+                start = new Date(new Date(today).setDate(today.getDate() - 30));
+                end = new Date();
+            }
+            this.startDate = start.toISOString().split('T')[0];
+            this.endDate = end.toISOString().split('T')[0];
+            this.$nextTick(() => this.$refs.filterForm.submit());
+        },
+        isPreset(preset) {
+            const today = new Date();
+            let start, end;
+            if (preset === 'this_week') {
+                const day = today.getDay();
+                const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+                start = new Date(new Date(today).setDate(diff));
+                end = new Date();
+            } else if (preset === 'this_month') {
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            } else if (preset === 'last_month') {
+                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                end = new Date(today.getFullYear(), today.getMonth(), 0);
+            } else if (preset === 'last_30_days') {
+                start = new Date(new Date(today).setDate(today.getDate() - 30));
+                end = new Date();
+            }
+            if (!start || !end) return false;
+            return this.startDate === start.toISOString().split('T')[0] && this.endDate === end.toISOString().split('T')[0];
+        }
+    }">
+        <form x-ref="filterForm" method="GET" action="{{ route('dashboard') }}" class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1">
+                <button type="button" @click="setPreset('this_week')" :class="isPreset('this_week') ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">This Week</button>
+                <button type="button" @click="setPreset('last_30_days')" :class="isPreset('last_30_days') ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">Last 30 Days</button>
+                <button type="button" @click="setPreset('this_month')" :class="isPreset('this_month') ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">This Month</button>
+                <button type="button" @click="setPreset('last_month')" :class="isPreset('last_month') ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">Last Month</button>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600">
+                    <input type="date" name="start_date" x-model="startDate" class="bg-transparent border-0 p-0 text-xs font-bold text-slate-700 focus:ring-0 focus:border-0 w-28">
+                    <span class="text-slate-300">to</span>
+                    <input type="date" name="end_date" x-model="endDate" class="bg-transparent border-0 p-0 text-xs font-bold text-slate-700 focus:ring-0 focus:border-0 w-28">
+                </div>
+                <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition shadow-sm">Apply</button>
+            </div>
+        </form>
+    </div>
+
     <!-- Net Worth Hero Card -->
     <div class="bg-indigo-600 rounded-3xl shadow-lg border border-indigo-500 overflow-hidden relative">
         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxjaXJjbGUgY3g9IjMiIGN5PSIzIiByPSIzIiBmaWxsPSIjZmZmZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPjwvZz48L3N2Zz4=')]"></div>
@@ -135,6 +201,38 @@
                 <div class="flex justify-between text-xs text-slate-500">
                     <span>Rp {{ number_format($budget->spent, 0, ',', '.') }} spent</span>
                     <span>Rp {{ number_format($budget->amount, 0, ',', '.') }} limit</span>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    <!-- Savings Goals Tracker -->
+    @if(isset($dashboardSavingsGoals) && $dashboardSavingsGoals->isNotEmpty())
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 sm:p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-semibold text-slate-800">Savings Goals</h3>
+            <a href="{{ route('savings-goals.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">View All →</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($dashboardSavingsGoals as $goal)
+            @php
+                $percentage = $goal->target_amount > 0 ? min(100, round(($goal->current_amount / $goal->target_amount) * 100)) : 0;
+            @endphp
+            <div>
+                <div class="flex justify-between items-end mb-2">
+                    <span class="text-sm font-medium text-slate-700">{{ $goal->name }}</span>
+                    <span class="text-xs font-semibold text-slate-500">
+                        {{ $percentage }}%
+                    </span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2 mb-1 overflow-hidden">
+                    <div class="h-2 rounded-full {{ $goal->status === 'completed' ? 'bg-emerald-500' : 'bg-indigo-600' }}" style="width: {{ $percentage }}%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-slate-500">
+                    <span>Rp {{ number_format($goal->current_amount, 0, ',', '.') }}</span>
+                    <span>Rp {{ number_format($goal->target_amount, 0, ',', '.') }} target</span>
                 </div>
             </div>
             @endforeach

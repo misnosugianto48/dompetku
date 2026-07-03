@@ -8,7 +8,10 @@ use App\Actions\Transactions\CreateTransaction;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Models\Account;
 use App\Models\Asset;
+use App\Models\AssetPriceHistory;
 use App\Models\Category;
+use App\Models\SavingsGoal;
+use App\Models\Tag;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -18,7 +21,7 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Transaction::with(['account', 'category'])->latest('date');
+        $query = Transaction::with(['account', 'category', 'tags'])->latest('date');
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -30,6 +33,12 @@ class TransactionController extends Controller
 
         if ($request->filled('account_id')) {
             $query->where('account_id', $request->account_id);
+        }
+
+        if ($request->filled('tag_id')) {
+            $query->whereHas('tags', function ($q) use ($request) {
+                $q->where('tags.id', $request->tag_id);
+            });
         }
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
@@ -51,21 +60,24 @@ class TransactionController extends Controller
         $transactions = $query->paginate(20);
         $categories = Category::all();
         $accounts = Account::all();
+        $tags = Tag::all();
 
-        return view('transactions.index', compact('transactions', 'categories', 'accounts'));
+        return view('transactions.index', compact('transactions', 'categories', 'accounts', 'tags'));
     }
 
     public function create(Request $request)
     {
         $categories = Category::all();
         $accounts = Account::all();
+        $tags = Tag::all();
+        $savingsGoals = SavingsGoal::where('status', 'active')->get();
         $selectedAsset = null;
 
         if ($request->filled('asset_id')) {
             $selectedAsset = Asset::find($request->asset_id);
         }
 
-        return view('transactions.create', compact('categories', 'accounts', 'selectedAsset'));
+        return view('transactions.create', compact('categories', 'accounts', 'tags', 'savingsGoals', 'selectedAsset'));
     }
 
     public function transfer()
@@ -81,6 +93,13 @@ class TransactionController extends Controller
 
         DB::transaction(function () use ($validated) {
             $transaction = app(CreateTransaction::class)->handle($validated);
+
+            $tags = $validated['tags'] ?? [];
+            $transaction->tags()->sync($tags);
+
+            if (! empty($validated['savings_goal_id'])) {
+                SavingsGoal::adjustAmount((int) $validated['savings_goal_id'], $validated['type'], (float) $validated['amount']);
+            }
 
             $account = Account::findOrFail($validated['account_id']);
             app(ApplyTransactionToAccount::class)->handle($account, $validated['type'], (float) $validated['amount']);
@@ -113,8 +132,10 @@ class TransactionController extends Controller
     {
         $categories = Category::all();
         $accounts = Account::all();
+        $tags = Tag::all();
+        $savingsGoals = SavingsGoal::all();
 
-        return view('transactions.edit', compact('transaction', 'categories', 'accounts'));
+        return view('transactions.edit', compact('transaction', 'categories', 'accounts', 'tags', 'savingsGoals'));
     }
 
     public function update(StoreTransactionRequest $request, Transaction $transaction)
@@ -122,6 +143,11 @@ class TransactionController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $transaction) {
+            // Reverse old savings goal contribution/withdrawal
+            if ($transaction->savings_goal_id !== null) {
+                SavingsGoal::adjustAmount($transaction->savings_goal_id, $transaction->type, (float) $transaction->amount, true);
+            }
+
             // Reverse old balances
             $oldAccount = $transaction->account;
             $oldAmount = (float) $transaction->amount;
@@ -135,15 +161,48 @@ class TransactionController extends Controller
                 }
             }
 
-            // Also reverse old asset transaction if it exists...
-            // Note: Since ApplyTransactionToAsset doesn't have a strict "reverse" built in here and the prompt says "preserve asset linkage", we might just skip editing asset quantities for simplicity, or just update the transaction basic fields.
-            // Wait, for full correctness we might need to recreate asset transaction logic. But let's assume we don't reverse asset quantities in this Phase 1 to avoid complexity.
+            // Reverse old asset quantities and prices if applicable
+            $oldAssetId = $transaction->asset_id;
+            $oldQuantity = (float) $transaction->quantity;
+            $oldType = $transaction->type;
+
+            if ($oldAssetId !== null && $oldQuantity > 0) {
+                $oldAsset = Asset::find($oldAssetId);
+                if ($oldAsset) {
+                    if ($oldType === 'expense') {
+                        $newQty = $oldAsset->quantity - $oldQuantity;
+                        if ($newQty > 0) {
+                            $oldAsset->purchase_price = (($oldAsset->quantity * $oldAsset->purchase_price) - $oldAmount) / $newQty;
+                        } else {
+                            $oldAsset->purchase_price = 0;
+                        }
+                        $oldAsset->quantity = $newQty;
+                    } elseif ($oldType === 'income') {
+                        $oldAsset->quantity += $oldQuantity;
+                    }
+                    $oldAsset->save();
+
+                    // Clean up corresponding price history entry
+                    AssetPriceHistory::where('asset_id', $oldAssetId)
+                        ->where('date', $transaction->date->toDateString())
+                        ->where('price', $oldAmount / $oldQuantity)
+                        ->first()?->delete();
+                }
+            }
 
             // Update transaction
             $transaction->update(Arr::only($validated, [
-                'account_id', 'destination_account_id', 'category_id', 'asset_id',
-                'amount', 'type', 'date', 'description', 'notes',
+                'account_id', 'destination_account_id', 'category_id', 'asset_id', 'quantity',
+                'amount', 'type', 'date', 'description', 'notes', 'savings_goal_id',
             ]));
+
+            $tags = $validated['tags'] ?? [];
+            $transaction->tags()->sync($tags);
+
+            // Apply new savings goal contribution/withdrawal
+            if (! empty($validated['savings_goal_id'])) {
+                SavingsGoal::adjustAmount((int) $validated['savings_goal_id'], $validated['type'], (float) $validated['amount']);
+            }
 
             // Apply new balances
             $newAccount = Account::findOrFail($validated['account_id']);
@@ -153,6 +212,24 @@ class TransactionController extends Controller
                 $newDestination = Account::findOrFail($validated['destination_account_id']);
                 app(ApplyTransactionToAccount::class)->handle($newDestination, 'income', (float) $validated['amount']);
             }
+
+            // Apply new asset quantities and prices if applicable
+            $newAssetId = $transaction->asset_id;
+            $newQuantity = (float) $transaction->quantity;
+            $newAmount = (float) $transaction->amount;
+            $newType = $transaction->type;
+            $newDate = $transaction->date->toDateString();
+
+            if ($newAssetId !== null && $newQuantity > 0) {
+                $newAsset = Asset::findOrFail($newAssetId);
+                app(ApplyTransactionToAsset::class)->handle(
+                    $newAsset,
+                    $newType,
+                    $newAmount,
+                    $newQuantity,
+                    $newDate
+                );
+            }
         });
 
         return redirect()->route('transactions.index')->with('success', 'Transaction updated successfully.');
@@ -160,19 +237,55 @@ class TransactionController extends Controller
 
     public function destroy(Transaction $transaction)
     {
-        $account = $transaction->account;
-
-        if ($transaction->type === 'income') {
-            $account->decrement('balance', (float) $transaction->amount);
-        } else {
-            $account->increment('balance', (float) $transaction->amount);
-
-            if ($transaction->type === 'transfer' && $transaction->destination_account_id) {
-                $transaction->destinationAccount->decrement('balance', (float) $transaction->amount);
+        DB::transaction(function () use ($transaction) {
+            if ($transaction->savings_goal_id !== null) {
+                SavingsGoal::adjustAmount($transaction->savings_goal_id, $transaction->type, (float) $transaction->amount, true);
             }
-        }
 
-        $transaction->delete();
+            $account = $transaction->account;
+
+            if ($transaction->type === 'income') {
+                $account->decrement('balance', (float) $transaction->amount);
+            } else {
+                $account->increment('balance', (float) $transaction->amount);
+
+                if ($transaction->type === 'transfer' && $transaction->destination_account_id) {
+                    $transaction->destinationAccount->decrement('balance', (float) $transaction->amount);
+                }
+            }
+
+            // Reverse asset quantities and prices if applicable
+            $assetId = $transaction->asset_id;
+            $quantity = (float) $transaction->quantity;
+            $amount = (float) $transaction->amount;
+            $type = $transaction->type;
+
+            if ($assetId !== null && $quantity > 0) {
+                $asset = Asset::find($assetId);
+                if ($asset) {
+                    if ($type === 'expense') {
+                        $newQty = $asset->quantity - $quantity;
+                        if ($newQty > 0) {
+                            $asset->purchase_price = (($asset->quantity * $asset->purchase_price) - $amount) / $newQty;
+                        } else {
+                            $asset->purchase_price = 0;
+                        }
+                        $asset->quantity = $newQty;
+                    } elseif ($type === 'income') {
+                        $asset->quantity += $quantity;
+                    }
+                    $asset->save();
+
+                    // Clean up corresponding price history entry
+                    AssetPriceHistory::where('asset_id', $assetId)
+                        ->where('date', $transaction->date->toDateString())
+                        ->where('price', $amount / $quantity)
+                        ->first()?->delete();
+                }
+            }
+
+            $transaction->delete();
+        });
 
         return redirect()->route('transactions.index')->with('success', 'Transaction deleted.');
     }

@@ -76,6 +76,36 @@
                 </div>
             </div>
 
+            @if($savingsGoals->isNotEmpty())
+            <div>
+                <x-form.select label="Link to Savings Goal" name="savings_goal_id">
+                    <option value="">None (General Transaction)</option>
+                    @foreach($savingsGoals as $goal)
+                    <option value="{{ $goal->id }}" {{ old('savings_goal_id') == $goal->id ? 'selected' : '' }}>
+                        {{ $goal->name }} (Rp {{ number_format($goal->current_amount, 0, ',', '.') }} / Rp {{ number_format($goal->target_amount, 0, ',', '.') }})
+                    </option>
+                    @endforeach
+                </x-form.select>
+            </div>
+            @endif
+
+            @if($tags->isNotEmpty())
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tags</label>
+                <div class="flex flex-wrap gap-2">
+                    @foreach($tags as $tag)
+                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition text-sm">
+                        <input type="checkbox" name="tags[]" value="{{ $tag->id }}" {{ in_array($tag->id, old('tags', [])) ? 'checked' : '' }} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full" style="background-color: {{ $tag->color ?? '#cbd5e1' }}"></span>
+                            #{{ $tag->name }}
+                        </span>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Description</label>
                 <textarea name="description" rows="2" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Optional description...">{{ old('description', request('description', $selectedAsset ? 'Repeat order for ' . $selectedAsset->name : '')) }}</textarea>

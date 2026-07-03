@@ -24,6 +24,9 @@ class StoreTransactionRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:500'],
             'notes' => ['nullable', 'string'],
             'quantity' => ['nullable', 'numeric', 'gt:0', 'required_with:asset_id'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['exists:tags,id'],
+            'savings_goal_id' => ['nullable', 'exists:savings_goals,id'],
         ];
     }
 }

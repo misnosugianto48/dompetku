@@ -11,7 +11,7 @@ beforeEach(function () {
 });
 
 it('can create an asset with a platform and high precision decimals', function () {
-    $response = $this->withoutMiddleware()->post(route('assets.store'), [
+    $response = $this->post(route('assets.store'), [
         'name' => 'Nanovest Bitcoin',
         'type' => 'crypto',
         'platform' => 'Nanovest',
@@ -39,7 +39,7 @@ it('can update an asset price with high precision', function () {
         'current_price' => 150.25,
     ]);
 
-    $response = $this->withoutMiddleware()->put(route('assets.update', $asset), [
+    $response = $this->put(route('assets.update', $asset), [
         'quantity' => 1.5,
         'current_price' => '155.8099',
     ]);

@@ -6,14 +6,22 @@ use App\Models\Account;
 use App\Models\Asset;
 use App\Models\Budget;
 use App\Models\Category;
+use App\Models\SavingsGoal;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        try {
+            Artisan::call('transactions:process-recurring');
+        } catch (\Exception $e) {
+            logger()->error('Failed to auto-process recurring transactions: '.$e->getMessage());
+        }
+
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
 
@@ -116,6 +124,7 @@ class DashboardController extends Controller
 
         $formCategories = Category::all();
         $formAccounts = Account::all();
+        $dashboardSavingsGoals = SavingsGoal::latest()->take(3)->get();
 
         return view('dashboard', compact(
             'totalBalance',
@@ -133,7 +142,10 @@ class DashboardController extends Controller
             'netWorthData',
             'netWorthLabels',
             'formCategories',
-            'formAccounts'
+            'formAccounts',
+            'dashboardSavingsGoals',
+            'startDate',
+            'endDate'
         ));
     }
 }

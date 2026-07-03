@@ -3,7 +3,7 @@
 test('registration screen is disabled', function () {
     $response = $this->get('/register');
 
-    $response->assertStatus(404);
+    $response->assertNotFound();
 });
 
 test('new users cannot register', function () {
@@ -14,6 +14,6 @@ test('new users cannot register', function () {
         'password_confirmation' => 'password',
     ]);
 
-    $response->assertStatus(404);
+    $response->assertNotFound();
     $this->assertGuest();
 });

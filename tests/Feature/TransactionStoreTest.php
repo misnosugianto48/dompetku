@@ -25,7 +25,7 @@ it('stores an expense transaction without an asset and updates account balance',
         'color' => '#000000',
     ]);
 
-    $response = $this->withoutMiddleware()->post(route('transactions.store'), [
+    $response = $this->post(route('transactions.store'), [
         'account_id' => $account->id,
         'category_id' => $category->id,
         'amount' => 250000,
@@ -61,7 +61,7 @@ it('stores an income transaction without an asset and updates account balance', 
         'color' => '#000000',
     ]);
 
-    $response = $this->withoutMiddleware()->post(route('transactions.store'), [
+    $response = $this->post(route('transactions.store'), [
         'account_id' => $account->id,
         'category_id' => $category->id,
         'amount' => 500000,

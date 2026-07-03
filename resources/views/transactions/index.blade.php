@@ -37,7 +37,7 @@
 <div class="space-y-4">
     <!-- Filters -->
     <form method="GET" action="{{ route('transactions.index') }}" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <select name="type" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="">All Types</option>
                 <option value="income" {{ request('type') === 'income' ? 'selected' : '' }}>Income</option>
@@ -54,6 +54,12 @@
                 <option value="">All Accounts</option>
                 @foreach($accounts as $acc)
                 <option value="{{ $acc->id }}" {{ request('account_id') == $acc->id ? 'selected' : '' }}>{{ $acc->name }}</option>
+                @endforeach
+            </select>
+            <select name="tag_id" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">All Tags</option>
+                @foreach($tags as $tag)
+                <option value="{{ $tag->id }}" {{ request('tag_id') == $tag->id ? 'selected' : '' }}>#{{ $tag->name }}</option>
                 @endforeach
             </select>
             <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Start Date">
@@ -83,7 +89,18 @@
                     @forelse($transactions as $t)
                     <tr class="hover:bg-slate-50/50 transition">
                         <td class="px-4 sm:px-6 py-3 whitespace-nowrap text-sm text-slate-600">{{ $t->date->format('d M Y') }}</td>
-                        <td class="px-4 sm:px-6 py-3 text-sm text-slate-800 max-w-[200px] truncate">{{ $t->description ?: '-' }}</td>
+                        <td class="px-4 sm:px-6 py-3 text-sm text-slate-800 max-w-[200px]">
+                            <div class="font-medium truncate">{{ $t->description ?: '-' }}</div>
+                            @if($t->tags->isNotEmpty())
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                @foreach($t->tags as $tag)
+                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold border" style="background-color: {{ $tag->color ?? '#6366f1' }}10; border-color: {{ $tag->color ?? '#6366f1' }}30; color: {{ $tag->color ?? '#6366f1' }}">
+                                    #{{ $tag->name }}
+                                </span>
+                                @endforeach
+                            </div>
+                            @endif
+                        </td>
                         <td class="px-4 sm:px-6 py-3 whitespace-nowrap hidden sm:table-cell">
                             @if($t->category)
                             <span class="inline-flex items-center gap-1.5 text-sm">
