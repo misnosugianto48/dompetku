@@ -58,3 +58,42 @@ test('google callback registers and logs in a new user', function () {
     expect($user->google_id)->toBe('google-id-456');
     expect($user->password)->toBeNull();
 });
+
+test('google callback rejects login if google_id does not match stored google_id', function () {
+    $user = User::factory()->create([
+        'email' => 'test@example.com',
+        'google_id' => 'google-id-123',
+    ]);
+
+    $googleUserMock = Mockery::mock('Laravel\Socialite\Two\User');
+    $googleUserMock->shouldReceive('getId')->andReturn('google-id-different');
+    $googleUserMock->shouldReceive('getEmail')->andReturn('test@example.com');
+    $googleUserMock->shouldReceive('getName')->andReturn('Test User');
+
+    $socialiteMock = Mockery::mock('Laravel\Socialite\Contracts\Provider');
+    $socialiteMock->shouldReceive('user')->once()->andReturn($googleUserMock);
+
+    Socialite::shouldReceive('driver')->with('google')->once()->andReturn($socialiteMock);
+
+    $response = $this->get('/login/google/callback');
+
+    $this->assertGuest();
+    $response->assertRedirect(route('login'));
+    $response->assertSessionHasErrors('email');
+});
+
+test('google callback rejects login if email is empty from Google', function () {
+    $googleUserMock = Mockery::mock('Laravel\Socialite\Two\User');
+    $googleUserMock->shouldReceive('getEmail')->andReturn('');
+
+    $socialiteMock = Mockery::mock('Laravel\Socialite\Contracts\Provider');
+    $socialiteMock->shouldReceive('user')->once()->andReturn($googleUserMock);
+
+    Socialite::shouldReceive('driver')->with('google')->once()->andReturn($socialiteMock);
+
+    $response = $this->get('/login/google/callback');
+
+    $this->assertGuest();
+    $response->assertRedirect(route('login'));
+    $response->assertSessionHasErrors('email');
+});

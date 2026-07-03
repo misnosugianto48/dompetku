@@ -32,12 +32,22 @@ class GoogleController extends Controller
             ]);
         }
 
+        if (empty($googleUser->getEmail())) {
+            return redirect()->route('login')->withErrors([
+                'email' => 'Unable to retrieve email address from Google.',
+            ]);
+        }
+
         $user = User::where('email', $googleUser->getEmail())->first();
 
         if ($user) {
             if (empty($user->google_id)) {
                 $user->update([
                     'google_id' => $googleUser->getId(),
+                ]);
+            } elseif ($user->google_id !== $googleUser->getId()) {
+                return redirect()->route('login')->withErrors([
+                    'email' => 'This Google account does not match the linked account for this email.',
                 ]);
             }
         } else {
