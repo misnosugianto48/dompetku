@@ -26,6 +26,12 @@
 - **CSV Import/Export** — Move your data in and out of the system with robust mapping logic.
 - **Automated Reports** — Scheduled PDF financial summaries dispatched directly to your email.
 
+### 🎨 Premium Interface & Attachments (Phase 5 & 6)
+
+- **Global Dark Mode** — High-contrast, eye-pleasing theme support with a header switch, persisting preferences in `localStorage` across all views.
+- **Mobile Layout & Navigation** — Native-feeling mobile layout with a fixed bottom navigation bar and a floating primary Add Transaction button.
+- **Receipts & Attachments** — Upload receipts or invoices (JPG, PNG, WebP, PDF up to 5MB). Supports dynamic storage drivers (local storage or Cloudinary cloud storage) with automated cleanup of physical files on edit/delete.
+
 ## 🛠 Tech Stack & Standards
 
 - **Framework:** PHP 8.2+, [Laravel 12](https://laravel.com) (Latest)
@@ -119,6 +125,9 @@ To enable the deployment workflow, configure the following secrets in your GitHu
 | `GOOGLE_CLIENT_ID` | Google OAuth Client ID | `12345-abcde.apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | `GOCSPX-abcdef...` |
 | `GOOGLE_REDIRECT_URI` | Google OAuth Callback URL | `https://yourdomain.com/login/google/callback` |
+| `RECEIPT_DISK` | Storage disk for transaction receipts (`public` or `cloudinary`) | `cloudinary` |
+| `CLOUDINARY_URL` | Cloudinary credentials connection URL | `cloudinary://API_KEY:API_SECRET@CLOUD_NAME` |
+| `CLOUDINARY_UPLOAD_PRESET` | Cloudinary upload preset name (optional) | `your_preset_name` |
 
 ## 📁 Architecture Overview
 
