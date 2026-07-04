@@ -112,13 +112,41 @@
     </div>
 
     <!-- Quick Add Form -->
-    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 sm:p-5 shadow-sm" x-data="{ type: 'expense', amount: '' }" x-init="amount = DompetkuNumberFormat.formatNumber(amount)">
+    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 sm:p-5 shadow-sm"
+         x-data="{
+             type: 'expense',
+             amount: '',
+             categoryId: '',
+             categories: [
+                 @foreach($formCategories as $cat)
+                     { id: '{{ $cat->id }}', name: '{{ $cat->name }}', type: '{{ $cat->type }}' },
+                 @endforeach
+             ],
+             init() {
+                 this.amount = DompetkuNumberFormat.formatNumber(this.amount);
+                 this.updateCategory();
+                 this.$watch('type', () => this.updateCategory());
+             },
+             updateCategory() {
+                 const available = this.categories.filter(c => c.type === this.type);
+                 if (available.length > 0) {
+                     this.categoryId = available[0].id;
+                 } else {
+                     this.categoryId = '';
+                 }
+             }
+         }">
         <h3 class="font-semibold text-indigo-900 mb-3 flex items-center gap-2 text-sm">
             <svg class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
             Quick Add
         </h3>
+        
+        <x-ui.errors class="mb-4" />
+
         <form method="POST" action="{{ route('transactions.store') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
             @csrf
+            <input type="hidden" name="date" value="{{ date('Y-m-d') }}">
+            <input type="hidden" name="redirect_to" value="{{ route('dashboard') }}">
             <div>
                 <select name="type" x-model="type" class="w-full rounded-xl border-indigo-200 text-sm focus:ring-indigo-500 bg-white py-2">
                     <option value="expense">Expense</option>
@@ -138,7 +166,7 @@
                 </select>
             </div>
             <div>
-                <select name="category_id" required class="w-full rounded-xl border-indigo-200 text-sm focus:ring-indigo-500 bg-white py-2">
+                <select name="category_id" x-model="categoryId" required class="w-full rounded-xl border-indigo-200 text-sm focus:ring-indigo-500 bg-white py-2">
                     @foreach($formCategories as $cat)
                         <option value="{{ $cat->id }}" x-show="type === '{{ $cat->type }}'">{{ $cat->name }}</option>
                     @endforeach

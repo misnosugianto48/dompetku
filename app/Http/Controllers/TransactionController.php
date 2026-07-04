@@ -125,6 +125,10 @@ class TransactionController extends Controller
             }
         });
 
+        if ($request->filled('redirect_to')) {
+            return redirect($request->input('redirect_to'))->with('success', 'Transaction added successfully.');
+        }
+
         return redirect()->route('transactions.index')->with('success', 'Transaction added successfully.');
     }
 

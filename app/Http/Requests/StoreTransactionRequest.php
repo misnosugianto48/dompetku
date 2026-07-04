@@ -27,6 +27,7 @@ class StoreTransactionRequest extends FormRequest
             'tags' => ['nullable', 'array'],
             'tags.*' => ['exists:tags,id'],
             'savings_goal_id' => ['nullable', 'exists:savings_goals,id'],
+            'redirect_to' => ['nullable', 'string'],
         ];
     }
 }

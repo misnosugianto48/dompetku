@@ -74,3 +74,53 @@ it('stores an income transaction without an asset and updates account balance', 
 
     expect((float) $account->refresh()->balance)->toBe(1500000.0);
 });
+
+it('fails to store a transaction when date is missing', function () {
+    $account = Account::create([
+        'name' => 'Main Account',
+        'type' => 'bank',
+        'balance' => 1000000,
+    ]);
+
+    $category = Category::create([
+        'name' => 'Food',
+        'type' => 'expense',
+        'color' => '#000000',
+    ]);
+
+    $response = $this->post(route('transactions.store'), [
+        'account_id' => $account->id,
+        'category_id' => $category->id,
+        'amount' => 250000,
+        'type' => 'expense',
+        'description' => 'Lunch',
+    ]);
+
+    $response->assertSessionHasErrors(['date']);
+});
+
+it('redirects to redirect_to parameter if provided', function () {
+    $account = Account::create([
+        'name' => 'Main Account',
+        'type' => 'bank',
+        'balance' => 1000000,
+    ]);
+
+    $category = Category::create([
+        'name' => 'Food',
+        'type' => 'expense',
+        'color' => '#000000',
+    ]);
+
+    $response = $this->post(route('transactions.store'), [
+        'account_id' => $account->id,
+        'category_id' => $category->id,
+        'amount' => 250000,
+        'type' => 'expense',
+        'date' => now()->toDateString(),
+        'description' => 'Lunch',
+        'redirect_to' => route('dashboard'),
+    ]);
+
+    $response->assertRedirect(route('dashboard'));
+});
