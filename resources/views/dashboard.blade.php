@@ -12,7 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div class="space-y-6">
     <!-- Date Range Picker -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5" x-data="{
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-4 sm:p-5" x-data="{
         startDate: '{{ $startDate }}',
         endDate: '{{ $endDate }}',
         setPreset(preset) {
@@ -61,25 +61,25 @@
     }">
         <form x-ref="filterForm" method="GET" action="{{ route('dashboard') }}" class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1">
-                <button type="button" @click="setPreset('this_week')" :class="isPreset('this_week') ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">This Week</button>
-                <button type="button" @click="setPreset('last_30_days')" :class="isPreset('last_30_days') ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">Last 30 Days</button>
-                <button type="button" @click="setPreset('this_month')" :class="isPreset('this_month') ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">This Month</button>
-                <button type="button" @click="setPreset('last_month')" :class="isPreset('last_month') ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">Last Month</button>
+                <button type="button" @click="setPreset('this_week')" :class="isPreset('this_week') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400' : 'bg-slate-50 hover:bg-slate-100 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">This Week</button>
+                <button type="button" @click="setPreset('last_30_days')" :class="isPreset('last_30_days') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400' : 'bg-slate-50 hover:bg-slate-100 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">Last 30 Days</button>
+                <button type="button" @click="setPreset('this_month')" :class="isPreset('this_month') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400' : 'bg-slate-50 hover:bg-slate-100 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">This Month</button>
+                <button type="button" @click="setPreset('last_month')" :class="isPreset('last_month') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400' : 'bg-slate-50 hover:bg-slate-100 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400'" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0">Last Month</button>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600">
-                    <input type="date" name="start_date" x-model="startDate" class="bg-transparent border-0 p-0 text-xs font-bold text-slate-700 focus:ring-0 focus:border-0 w-28">
-                    <span class="text-slate-300">to</span>
-                    <input type="date" name="end_date" x-model="endDate" class="bg-transparent border-0 p-0 text-xs font-bold text-slate-700 focus:ring-0 focus:border-0 w-28">
+                <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400">
+                    <input type="date" name="start_date" x-model="startDate" class="bg-transparent border-0 p-0 text-xs font-bold text-slate-700 dark:text-slate-200 focus:ring-0 focus:border-0 w-28">
+                    <span class="text-slate-300 dark:text-slate-600">to</span>
+                    <input type="date" name="end_date" x-model="endDate" class="bg-transparent border-0 p-0 text-xs font-bold text-slate-700 dark:text-slate-200 focus:ring-0 focus:border-0 w-28">
                 </div>
-                <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition shadow-sm">Apply</button>
+                <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition shadow-sm">Apply</button>
             </div>
         </form>
     </div>
 
     <!-- Net Worth Hero Card -->
     <div class="bg-indigo-600 rounded-3xl shadow-lg border border-indigo-500 overflow-hidden relative">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxjaXJjbGUgY3g9IjMiIGN5PSIzIiByPSIzIiBmaWxsPSIjZmZmZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPjwvZz48L3N2Zz4=')]"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAyIiBoZWlnaHQ9IjYwMiIgdmVpdy1ib3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxjaXJjbGUgY3g9IjMiIGN5PSIzIiByPSIzIiBmaWxsPSIjZmZmZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPjwvZz48L3N2Zz4=')]"></div>
         <div class="p-6 sm:p-8 relative z-10 flex flex-col lg:flex-row justify-between items-center gap-8">
             <div class="text-white w-full lg:w-1/3">
                 <p class="text-indigo-200 font-medium mb-1 tracking-wide">Total Net Worth</p>
@@ -93,26 +93,26 @@
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <p class="text-xs sm:text-sm font-medium text-slate-500">Total Balance</p>
-            <h2 class="text-lg sm:text-2xl font-bold mt-1 text-slate-900">Rp {{ number_format($totalBalance, 0, ',', '.') }}</h2>
+        <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-md transition">
+            <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Total Balance</p>
+            <h2 class="text-lg sm:text-2xl font-bold mt-1 text-slate-900 dark:text-white">Rp {{ number_format($totalBalance, 0, ',', '.') }}</h2>
         </div>
-        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <p class="text-xs sm:text-sm font-medium text-slate-500">Income</p>
+        <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-md transition">
+            <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Income</p>
             <h2 class="text-lg sm:text-2xl font-bold mt-1 text-emerald-600">+Rp {{ number_format($monthlyIncome, 0, ',', '.') }}</h2>
         </div>
-        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <p class="text-xs sm:text-sm font-medium text-slate-500">Expense</p>
+        <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-md transition">
+            <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Expense</p>
             <h2 class="text-lg sm:text-2xl font-bold mt-1 text-rose-600">-Rp {{ number_format($monthlyExpense, 0, ',', '.') }}</h2>
         </div>
-        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <p class="text-xs sm:text-sm font-medium text-slate-500">Asset Value</p>
-            <h2 class="text-lg sm:text-2xl font-bold mt-1 text-indigo-600">Rp {{ number_format($totalAssetValue, 0, ',', '.') }}</h2>
+        <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-md transition">
+            <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Asset Value</p>
+            <h2 class="text-lg sm:text-2xl font-bold mt-1 text-indigo-600 dark:text-indigo-400">Rp {{ number_format($totalAssetValue, 0, ',', '.') }}</h2>
         </div>
     </div>
 
     <!-- Quick Add Form -->
-    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 sm:p-5 shadow-sm"
+    <div class="bg-indigo-50 border border-indigo-100 dark:bg-indigo-950/20 dark:border-indigo-900/50 rounded-2xl p-4 sm:p-5 shadow-sm"
          x-data="{
              type: 'expense',
              amount: '',
@@ -136,8 +136,8 @@
                  }
              }
          }">
-        <h3 class="font-semibold text-indigo-900 mb-3 flex items-center gap-2 text-sm">
-            <svg class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+        <h3 class="font-semibold text-indigo-900 dark:text-indigo-400 mb-3 flex items-center gap-2 text-sm">
+            <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
             Quick Add
         </h3>
         
@@ -148,25 +148,25 @@
             <input type="hidden" name="date" value="{{ date('Y-m-d') }}">
             <input type="hidden" name="redirect_to" value="{{ route('dashboard') }}">
             <div>
-                <select name="type" x-model="type" class="w-full rounded-xl border-indigo-200 text-sm focus:ring-indigo-500 bg-white py-2">
+                <select name="type" x-model="type" class="w-full rounded-xl border-indigo-200 dark:border-slate-800 text-sm focus:ring-indigo-500 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-2">
                     <option value="expense">Expense</option>
                     <option value="income">Income</option>
                 </select>
             </div>
             <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">Rp</span>
-                <input type="text" x-model="amount" @input="amount = DompetkuNumberFormat.formatNumber($event.target.value)" required class="w-full pl-9 rounded-xl border-indigo-200 text-sm font-semibold focus:ring-indigo-500 bg-white py-2" placeholder="0.00">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm font-medium">Rp</span>
+                <input type="text" x-model="amount" @input="amount = DompetkuNumberFormat.formatNumber($event.target.value)" required class="w-full pl-9 rounded-xl border-indigo-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-sm font-semibold focus:ring-indigo-500 bg-white dark:bg-slate-900 py-2" placeholder="0.00">
                 <input type="hidden" name="amount" :value="DompetkuNumberFormat.getRaw(amount)">
             </div>
             <div>
-                <select name="account_id" required class="w-full rounded-xl border-indigo-200 text-sm focus:ring-indigo-500 bg-white py-2">
+                <select name="account_id" required class="w-full rounded-xl border-indigo-200 dark:border-slate-800 text-sm focus:ring-indigo-500 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-2">
                     @foreach($formAccounts as $acc)
                         <option value="{{ $acc->id }}">{{ $acc->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
-                <select name="category_id" x-model="categoryId" required class="w-full rounded-xl border-indigo-200 text-sm focus:ring-indigo-500 bg-white py-2">
+                <select name="category_id" x-model="categoryId" required class="w-full rounded-xl border-indigo-200 dark:border-slate-800 text-sm focus:ring-indigo-500 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-2">
                     @foreach($formCategories as $cat)
                         <option value="{{ $cat->id }}" x-show="type === '{{ $cat->type }}'">{{ $cat->name }}</option>
                     @endforeach
@@ -181,19 +181,19 @@
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Bar Chart -->
-        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-100">
-            <h3 class="font-semibold text-slate-800 mb-4">Cash Flow (Last 6 Months)</h3>
+        <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <h3 class="font-semibold text-slate-800 dark:text-white mb-4">Cash Flow (Last 6 Months)</h3>
             <div class="relative h-64">
                 <canvas id="incomeExpenseChart"></canvas>
             </div>
         </div>
         
         <!-- Donut Chart -->
-        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-100">
-            <h3 class="font-semibold text-slate-800 mb-4">Expense Breakdown (This Period)</h3>
+        <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <h3 class="font-semibold text-slate-800 dark:text-white mb-4">Expense Breakdown (This Period)</h3>
             @if(empty($expenseValues))
-            <div class="h-64 flex flex-col items-center justify-center text-slate-400">
-                <svg class="w-12 h-12 mb-3 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div class="h-64 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+                <svg class="w-12 h-12 mb-3 text-slate-200 dark:text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 <p>No expenses recorded</p>
             </div>
             @else
@@ -206,10 +206,10 @@
 
     <!-- Budget Progress -->
     @if(isset($budgets) && $budgets->isNotEmpty())
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 sm:p-6">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 sm:p-6">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="font-semibold text-slate-800">Monthly Budget Tracking</h3>
-            <a href="{{ route('budgets.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">Manage →</a>
+            <h3 class="font-semibold text-slate-800 dark:text-white">Monthly Budget Tracking</h3>
+            <a href="{{ route('budgets.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">Manage →</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($budgets as $budget)
@@ -217,16 +217,16 @@
                 <div class="flex justify-between items-end mb-2">
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 rounded-full" style="background-color: {{ $budget->category->color }}"></div>
-                        <span class="text-sm font-medium text-slate-700">{{ $budget->category->name }}</span>
+                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $budget->category->name }}</span>
                     </div>
-                    <span class="text-xs font-semibold {{ $budget->percentage >= 90 ? 'text-rose-600' : ($budget->percentage >= 75 ? 'text-amber-500' : 'text-slate-500') }}">
+                    <span class="text-xs font-semibold {{ $budget->percentage >= 90 ? 'text-rose-600' : ($budget->percentage >= 75 ? 'text-amber-500' : 'text-slate-500 dark:text-slate-400') }}">
                         {{ $budget->percentage }}%
                     </span>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-2 mb-1 overflow-hidden">
+                <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 mb-1 overflow-hidden">
                     <div class="h-2 rounded-full {{ $budget->percentage >= 90 ? 'bg-rose-500' : ($budget->percentage >= 75 ? 'bg-amber-400' : 'bg-emerald-500') }}" style="width: {{ $budget->percentage }}%"></div>
                 </div>
-                <div class="flex justify-between text-xs text-slate-500">
+                <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
                     <span>Rp {{ number_format($budget->spent, 0, ',', '.') }} spent</span>
                     <span>Rp {{ number_format($budget->amount, 0, ',', '.') }} limit</span>
                 </div>
@@ -238,10 +238,10 @@
 
     <!-- Savings Goals Tracker -->
     @if(isset($dashboardSavingsGoals) && $dashboardSavingsGoals->isNotEmpty())
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 sm:p-6">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 sm:p-6">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="font-semibold text-slate-800">Savings Goals</h3>
-            <a href="{{ route('savings-goals.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">View All →</a>
+            <h3 class="font-semibold text-slate-800 dark:text-white">Savings Goals</h3>
+            <a href="{{ route('savings-goals.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">View All →</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($dashboardSavingsGoals as $goal)
@@ -250,15 +250,15 @@
             @endphp
             <div>
                 <div class="flex justify-between items-end mb-2">
-                    <span class="text-sm font-medium text-slate-700">{{ $goal->name }}</span>
-                    <span class="text-xs font-semibold text-slate-500">
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $goal->name }}</span>
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">
                         {{ $percentage }}%
                     </span>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-2 mb-1 overflow-hidden">
+                <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 mb-1 overflow-hidden">
                     <div class="h-2 rounded-full {{ $goal->status === 'completed' ? 'bg-emerald-500' : 'bg-indigo-600' }}" style="width: {{ $percentage }}%"></div>
                 </div>
-                <div class="flex justify-between text-xs text-slate-500">
+                <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
                     <span>Rp {{ number_format($goal->current_amount, 0, ',', '.') }}</span>
                     <span>Rp {{ number_format($goal->target_amount, 0, ',', '.') }} target</span>
                 </div>
@@ -269,39 +269,39 @@
     @endif
 
     <!-- Recent Transactions -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100">
-        <div class="px-4 sm:px-6 py-4 flex justify-between items-center border-b border-slate-100">
-            <h3 class="font-semibold text-slate-800">Recent Transactions</h3>
-            <a href="{{ route('transactions.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">View All →</a>
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="px-4 sm:px-6 py-4 flex justify-between items-center border-b border-slate-100 dark:border-slate-800">
+            <h3 class="font-semibold text-slate-800 dark:text-white">Recent Transactions</h3>
+            <a href="{{ route('transactions.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">View All →</a>
         </div>
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-100">
-                <thead class="bg-slate-50/50">
+            <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-800">
+                <thead class="bg-slate-50/50 dark:bg-slate-800/50">
                     <tr>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Date</th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Category</th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase hidden sm:table-cell">Account</th>
-                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase">Amount</th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Date</th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Category</th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase hidden sm:table-cell">Account</th>
+                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Amount</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50">
+                <tbody class="divide-y divide-slate-50 dark:divide-slate-800">
                     @forelse($recentTransactions as $t)
-                    <tr class="hover:bg-slate-50/50 transition">
-                        <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap text-sm text-slate-600">{{ $t->date->format('d M') }}</td>
+                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition">
+                        <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">{{ $t->date->format('d M') }}</td>
                         <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
                             <div class="flex items-center gap-2">
                                 <div class="w-2 h-2 rounded-full shrink-0" style="background-color: {{ $t->category->color }}"></div>
-                                <span class="text-sm text-slate-800">{{ $t->category->name }}</span>
+                                <span class="text-sm text-slate-800 dark:text-slate-200">{{ $t->category->name }}</span>
                             </div>
                         </td>
-                        <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap text-sm text-slate-500 hidden sm:table-cell">{{ $t->account->name }}</td>
+                        <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 hidden sm:table-cell">{{ $t->account->name }}</td>
                         <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap text-sm font-semibold text-right {{ $t->type === 'income' ? 'text-emerald-600' : 'text-rose-600' }}">
                             {{ $t->type === 'income' ? '+' : '-' }}Rp {{ number_format($t->amount, 0, ',', '.') }}
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-12 text-center text-slate-400 italic">No transactions yet. Add your first one!</td>
+                        <td colspan="4" class="px-6 py-12 text-center text-slate-400 dark:text-slate-500 italic">No transactions yet. Add your first one!</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -312,6 +312,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? '#94a3b8' : '#64748b'; // slate-400 vs slate-500
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+
     // Net Worth Line Chart
     const nwElement = document.getElementById('netWorthChart');
     if (nwElement) {
@@ -386,9 +390,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
+                    x: {
+                        grid: { color: gridColor },
+                        ticks: { color: textColor }
+                    },
                     y: { 
                         beginAtZero: true,
+                        grid: { color: gridColor },
                         ticks: {
+                            color: textColor,
                             callback: function(value) {
                                 return 'Rp ' + (value / 1000) + 'k';
                             }
@@ -396,6 +406,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 },
                 plugins: {
+                    legend: {
+                        labels: { color: textColor }
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -430,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     legend: { 
                         position: 'right',
                         labels: {
+                            color: textColor,
                             boxWidth: 12,
                             usePointStyle: true
                         }
