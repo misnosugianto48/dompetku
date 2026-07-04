@@ -90,7 +90,14 @@
                     <tr class="hover:bg-slate-50/50 transition">
                         <td class="px-4 sm:px-6 py-3 whitespace-nowrap text-sm text-slate-600">{{ $t->date->format('d M Y') }}</td>
                         <td class="px-4 sm:px-6 py-3 text-sm text-slate-800 max-w-[200px]">
-                            <div class="font-medium truncate">{{ $t->description ?: '-' }}</div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-medium truncate">{{ $t->description ?: '-' }}</span>
+                                @if($t->receipt_path)
+                                <a href="{{ $t->receipt_url }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0" title="View Receipt/Attachment">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                                </a>
+                                @endif
+                            </div>
                             @if($t->tags->isNotEmpty())
                             <div class="flex flex-wrap gap-1 mt-1">
                                 @foreach($t->tags as $tag)

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 class Transaction extends Model
 {
@@ -20,6 +21,7 @@ class Transaction extends Model
         'description',
         'notes',
         'savings_goal_id',
+        'receipt_path',
     ];
 
     protected function casts(): array
@@ -59,5 +61,14 @@ class Transaction extends Model
     public function savingsGoal(): BelongsTo
     {
         return $this->belongsTo(SavingsGoal::class);
+    }
+
+    public function getReceiptUrlAttribute(): ?string
+    {
+        if (! $this->receipt_path) {
+            return null;
+        }
+
+        return Storage::disk(config('filesystems.receipts_disk'))->url($this->receipt_path);
     }
 }

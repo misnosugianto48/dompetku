@@ -88,12 +88,15 @@ jobs:
         GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+        RECEIPT_DISK: ${{ secrets.RECEIPT_DISK }}
+        CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
+        CLOUDINARY_UPLOAD_PRESET: ${{ secrets.CLOUDINARY_UPLOAD_PRESET }}
       with:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.REMOTE_PORT || '22' }}
-        envs: GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT_URI
+        envs: GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT_URI,RECEIPT_DISK,CLOUDINARY_URL,CLOUDINARY_UPLOAD_PRESET
         script: |
           cd ${{ secrets.REMOTE_TARGET_DIR }}
           
@@ -117,6 +120,9 @@ jobs:
           if [ -n "$GOOGLE_CLIENT_ID" ]; then upsert_env_var "GOOGLE_CLIENT_ID" "$GOOGLE_CLIENT_ID"; fi
           if [ -n "$GOOGLE_CLIENT_SECRET" ]; then upsert_env_var "GOOGLE_CLIENT_SECRET" "$GOOGLE_CLIENT_SECRET"; fi
           if [ -n "$GOOGLE_REDIRECT_URI" ]; then upsert_env_var "GOOGLE_REDIRECT_URI" "$GOOGLE_REDIRECT_URI"; fi
+          if [ -n "$RECEIPT_DISK" ]; then upsert_env_var "RECEIPT_DISK" "$RECEIPT_DISK"; fi
+          if [ -n "$CLOUDINARY_URL" ]; then upsert_env_var "CLOUDINARY_URL" "$CLOUDINARY_URL"; fi
+          if [ -n "$CLOUDINARY_UPLOAD_PRESET" ]; then upsert_env_var "CLOUDINARY_UPLOAD_PRESET" "$CLOUDINARY_UPLOAD_PRESET"; fi
           
           # Put application in maintenance mode (optional, uncomment if desired)
           # php artisan down || true

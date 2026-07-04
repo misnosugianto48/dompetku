@@ -32,6 +32,7 @@ class CreateTransaction
             'description',
             'notes',
             'savings_goal_id',
+            'receipt_path',
         ]));
     }
 }

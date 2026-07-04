@@ -28,6 +28,8 @@ class StoreTransactionRequest extends FormRequest
             'tags.*' => ['exists:tags,id'],
             'savings_goal_id' => ['nullable', 'exists:savings_goals,id'],
             'redirect_to' => ['nullable', 'string'],
+            'receipt' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
+            'delete_receipt' => ['nullable', 'boolean'],
         ];
     }
 }

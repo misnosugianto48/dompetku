@@ -60,6 +60,10 @@ return [
             'report' => false,
         ],
 
+        'cloudinary' => [
+            'driver' => 'cloudinary',
+        ],
+
     ],
 
     /*
@@ -76,5 +80,7 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
     ],
+
+    'receipts_disk' => env('RECEIPT_DISK', 'public'),
 
 ];

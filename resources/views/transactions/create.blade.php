@@ -9,7 +9,7 @@
         quantity: '{{ old('quantity') }}',
         assetId: @js($selectedAsset?->id),
     }" x-init="amount = DompetkuNumberFormat.formatNumber(amount)">
-        <form method="POST" action="{{ route('transactions.store') }}" class="space-y-6">
+        <form method="POST" action="{{ route('transactions.store') }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
             
             @if($selectedAsset)
@@ -109,6 +109,17 @@
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Description</label>
                 <textarea name="description" rows="2" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Optional description...">{{ old('description', request('description', $selectedAsset ? 'Repeat order for ' . $selectedAsset->name : '')) }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Receipt / Attachment</label>
+                <div class="relative border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 transition cursor-pointer" x-data="{ fileName: '' }">
+                    <input type="file" name="receipt" accept="image/*,application/pdf" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
+                    <div class="flex flex-col items-center justify-center space-y-1">
+                        <svg class="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        <span class="text-xs font-semibold text-slate-600" x-text="fileName || 'Upload receipt (PDF or Image, max 5MB)'">Upload receipt (PDF or Image, max 5MB)</span>
+                    </div>
+                </div>
             </div>
 
             <x-ui.errors />

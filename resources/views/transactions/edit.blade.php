@@ -7,7 +7,7 @@
         type: '{{ old('type', $transaction->type) }}',
         amount: '{{ old('amount', $transaction->amount) }}',
     }" x-init="amount = DompetkuNumberFormat.formatNumber(amount)">
-        <form method="POST" action="{{ route('transactions.update', $transaction) }}" class="space-y-6">
+        <form method="POST" action="{{ route('transactions.update', $transaction) }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
 
@@ -108,6 +108,37 @@
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Notes</label>
                 <textarea name="notes" rows="2" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('notes', $transaction->notes) }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Receipt / Attachment</label>
+                @if($transaction->receipt_path)
+                <div class="mb-3 p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        @if(Str::endsWith($transaction->receipt_path, '.pdf'))
+                            <svg class="w-10 h-10 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                        @else
+                            <img src="{{ $transaction->receipt_url }}" class="w-10 h-10 object-cover rounded-lg border border-slate-200" alt="Receipt">
+                        @endif
+                        <div>
+                            <p class="text-xs font-bold text-slate-700">Current Receipt</p>
+                            <a href="{{ $transaction->receipt_url }}" target="_blank" class="text-[11px] text-indigo-600 hover:underline">View Attachment &rarr;</a>
+                        </div>
+                    </div>
+                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-100 bg-rose-50 text-rose-700 text-xs font-semibold cursor-pointer hover:bg-rose-100 transition">
+                        <input type="checkbox" name="delete_receipt" value="1" class="rounded border-rose-300 text-rose-600 focus:ring-rose-500">
+                        <span>Delete current receipt</span>
+                    </label>
+                </div>
+                @endif
+
+                <div class="relative border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 transition cursor-pointer" x-data="{ fileName: '' }">
+                    <input type="file" name="receipt" accept="image/*,application/pdf" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
+                    <div class="flex flex-col items-center justify-center space-y-1">
+                        <svg class="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        <span class="text-xs font-semibold text-slate-600" x-text="fileName || 'Upload new receipt (PDF or Image, max 5MB)'">Upload new receipt (PDF or Image, max 5MB)</span>
+                    </div>
+                </div>
             </div>
 
             <x-ui.errors />

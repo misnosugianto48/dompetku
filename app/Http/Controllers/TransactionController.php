@@ -16,6 +16,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
@@ -91,6 +92,12 @@ class TransactionController extends Controller
     {
         $validated = $request->validated();
 
+        if ($request->hasFile('receipt')) {
+            $disk = config('filesystems.receipts_disk');
+            $path = $request->file('receipt')->store('receipts', $disk);
+            $validated['receipt_path'] = $path;
+        }
+
         DB::transaction(function () use ($validated) {
             $transaction = app(CreateTransaction::class)->handle($validated);
 
@@ -146,6 +153,21 @@ class TransactionController extends Controller
     {
         $validated = $request->validated();
 
+        $disk = config('filesystems.receipts_disk');
+
+        if ($request->boolean('delete_receipt')) {
+            if ($transaction->receipt_path) {
+                Storage::disk($disk)->delete($transaction->receipt_path);
+            }
+            $validated['receipt_path'] = null;
+        } elseif ($request->hasFile('receipt')) {
+            if ($transaction->receipt_path) {
+                Storage::disk($disk)->delete($transaction->receipt_path);
+            }
+            $path = $request->file('receipt')->store('receipts', $disk);
+            $validated['receipt_path'] = $path;
+        }
+
         DB::transaction(function () use ($validated, $transaction) {
             // Reverse old savings goal contribution/withdrawal
             if ($transaction->savings_goal_id !== null) {
@@ -197,7 +219,7 @@ class TransactionController extends Controller
             // Update transaction
             $transaction->update(Arr::only($validated, [
                 'account_id', 'destination_account_id', 'category_id', 'asset_id', 'quantity',
-                'amount', 'type', 'date', 'description', 'notes', 'savings_goal_id',
+                'amount', 'type', 'date', 'description', 'notes', 'savings_goal_id', 'receipt_path',
             ]));
 
             $tags = $validated['tags'] ?? [];
@@ -242,6 +264,10 @@ class TransactionController extends Controller
     public function destroy(Transaction $transaction)
     {
         DB::transaction(function () use ($transaction) {
+            if ($transaction->receipt_path) {
+                Storage::disk(config('filesystems.receipts_disk'))->delete($transaction->receipt_path);
+            }
+
             if ($transaction->savings_goal_id !== null) {
                 SavingsGoal::adjustAmount($transaction->savings_goal_id, $transaction->type, (float) $transaction->amount, true);
             }
