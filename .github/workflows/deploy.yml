@@ -34,10 +34,10 @@ jobs:
         extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
         coverage: none
 
-    - name: Copy .env
+    - name: Copy .env for Testing
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-    - name: Install Composer Dependencies (Dev)
+    - name: Install Composer Dependencies (Dev for Testing)
       run: composer install --no-ansi --no-interaction --no-progress --prefer-dist
 
     - name: Generate Key
@@ -53,10 +53,6 @@ jobs:
         DB_PASSWORD: password
         DB_SSLMODE: disable
       run: php artisan test --compact
-
-    - name: Install Production Composer Dependencies
-      run: |
-        composer install --no-dev --no-ansi --no-interaction --no-progress --prefer-dist --optimize-autoloader
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -80,7 +76,8 @@ jobs:
         REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
         REMOTE_USER: ${{ secrets.REMOTE_USER }}
         TARGET: ${{ secrets.REMOTE_TARGET_DIR }}
-        EXCLUDE: "/.git/, /.github/, /node_modules/, /.env, /storage/framework/cache/data/*, /storage/framework/sessions/*, /storage/framework/views/*.php, /storage/logs/*, /tests/"
+        # /vendor/ ditambahkan ke EXCLUDE agar tidak ditransfer via Rsync
+        EXCLUDE: "/.git/, /.github/, /node_modules/, /vendor/, /.env, /storage/framework/cache/data/*, /storage/framework/sessions/*, /storage/framework/views/*.php, /storage/logs/*, /tests/"
 
     - name: Execute Remote Post-Deployment Commands
       uses: appleboy/ssh-action@master
@@ -99,7 +96,7 @@ jobs:
         envs: GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT_URI,RECEIPT_DISK,CLOUDINARY_URL,CLOUDINARY_UPLOAD_PRESET
         script: |
           cd ${{ secrets.REMOTE_TARGET_DIR }}
-          
+
           # Helper to safely set/update env variables in .env file
           upsert_env_var() {
             local key=$1
@@ -110,12 +107,12 @@ jobs:
               echo "${key}=${value}" >> .env
             fi
           }
-          
+
           # Ensure .env exists
           if [ ! -f .env ]; then
             cp .env.example .env
           fi
-          
+
           # Inject Google credentials if provided
           if [ -n "$GOOGLE_CLIENT_ID" ]; then upsert_env_var "GOOGLE_CLIENT_ID" "$GOOGLE_CLIENT_ID"; fi
           if [ -n "$GOOGLE_CLIENT_SECRET" ]; then upsert_env_var "GOOGLE_CLIENT_SECRET" "$GOOGLE_CLIENT_SECRET"; fi
@@ -123,18 +120,25 @@ jobs:
           if [ -n "$RECEIPT_DISK" ]; then upsert_env_var "RECEIPT_DISK" "$RECEIPT_DISK"; fi
           if [ -n "$CLOUDINARY_URL" ]; then upsert_env_var "CLOUDINARY_URL" "$CLOUDINARY_URL"; fi
           if [ -n "$CLOUDINARY_UPLOAD_PRESET" ]; then upsert_env_var "CLOUDINARY_UPLOAD_PRESET" "$CLOUDINARY_UPLOAD_PRESET"; fi
-          
-          # Put application in maintenance mode (optional, uncomment if desired)
-          # php artisan down || true
-          
+
+          # Put application in maintenance mode
+          php artisan down || true
+
+          # Install production dependencies di server
+          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
           # Run database migrations
           php artisan migrate --force
-          
+
           # Clear and optimize caches
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
           php artisan event:cache
-          
-          # Bring application back up (optional, uncomment if down was used)
-          # php artisan up || true
+
+          # Fix Permissions
+          chmod -R 775 storage bootstrap/cache
+          chmod +x artisan
+
+          # Bring application back up
+          php artisan up || true
