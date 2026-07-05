@@ -81,7 +81,7 @@
             @forelse($transactions as $t)
             <tr>
                 <td>{{ $t->date->format('d M Y') }}</td>
-                <td>{{ $t->category->name }}</td>
+                <td>{{ $t->category?->name ?? ($t->type === 'transfer' ? 'Transfer' : 'Uncategorized') }}</td>
                 <td>{{ $t->account->name }}</td>
                 <td>{{ $t->description ?: '-' }}</td>
                 <td class="text-right {{ $t->type === 'income' ? 'green' : 'red' }}">

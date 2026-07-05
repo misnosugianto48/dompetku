@@ -114,8 +114,8 @@
                         <td class="px-6 py-3 text-sm text-slate-600">{{ $t->date->format('d M Y') }}</td>
                         <td class="px-6 py-3 text-sm">
                             <span class="inline-flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full" style="background-color: {{ $t->category->color }}"></span>
-                                {{ $t->category->name }}
+                                <span class="w-2 h-2 rounded-full" style="background-color: {{ $t->category?->color ?? '#94a3b8' }}"></span>
+                                {{ $t->category?->name ?? ($t->type === 'transfer' ? 'Transfer' : 'Uncategorized') }}
                             </span>
                         </td>
                         <td class="px-6 py-3 text-sm text-slate-500 hidden sm:table-cell">{{ $t->account->name }}</td>

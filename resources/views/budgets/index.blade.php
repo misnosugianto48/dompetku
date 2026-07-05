@@ -9,8 +9,8 @@
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-start hover:shadow-md transition">
             <div>
                 <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full" style="background-color: {{ $budget->category->color }}"></div>
-                    <h4 class="font-semibold text-slate-800 text-lg">{{ $budget->category->name }}</h4>
+                    <div class="w-3 h-3 rounded-full" style="background-color: {{ $budget->category?->color ?? '#64748b' }}"></div>
+                    <h4 class="font-semibold text-slate-800 text-lg">{{ $budget->category?->name ?? 'Deleted Category' }}</h4>
                     <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium">{{ ucfirst($budget->period) }}</span>
                 </div>
                 <p class="text-2xl font-bold mt-2 text-slate-900">Rp {{ number_format($budget->amount, 0, ',', '.') }}</p>
@@ -30,7 +30,7 @@
 
                 <!-- Edit Modal -->
                 <div x-show="openEdit" @click.away="openEdit = false" class="absolute top-12 right-0 bg-white p-5 rounded-2xl shadow-xl z-20 border border-slate-100 w-72" style="display: none;">
-                    <h4 class="font-semibold text-slate-800 mb-3">Edit {{ $budget->category->name }} Budget</h4>
+                    <h4 class="font-semibold text-slate-800 mb-3">Edit {{ $budget->category?->name ?? 'Deleted Category' }} Budget</h4>
                     <form action="{{ route('budgets.update', $budget) }}" method="POST" class="space-y-4">
                         @csrf @method('PUT')
                         <input type="hidden" name="category_id" value="{{ $budget->category_id }}">

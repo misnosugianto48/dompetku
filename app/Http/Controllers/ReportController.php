@@ -80,8 +80,8 @@ class ReportController extends Controller
         $expenseByCategory = $transactions->where('type', 'expense')
             ->groupBy('category_id')
             ->map(fn ($group) => [
-                'name' => $group->first()->category->name,
-                'color' => $group->first()->category->color,
+                'name' => $group->first()->category?->name ?? 'Uncategorized',
+                'color' => $group->first()->category?->color ?? '#64748b',
                 'total' => $group->sum('amount'),
             ])
             ->sortByDesc('total')
@@ -90,8 +90,8 @@ class ReportController extends Controller
         $incomeByCategory = $transactions->where('type', 'income')
             ->groupBy('category_id')
             ->map(fn ($group) => [
-                'name' => $group->first()->category->name,
-                'color' => $group->first()->category->color,
+                'name' => $group->first()->category?->name ?? 'Uncategorized',
+                'color' => $group->first()->category?->color ?? '#64748b',
                 'total' => $group->sum('amount'),
             ])
             ->sortByDesc('total')

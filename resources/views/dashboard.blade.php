@@ -216,8 +216,8 @@
             <div>
                 <div class="flex justify-between items-end mb-2">
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-full" style="background-color: {{ $budget->category->color }}"></div>
-                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $budget->category->name }}</span>
+                        <div class="w-3 h-3 rounded-full" style="background-color: {{ $budget->category?->color ?? '#64748b' }}"></div>
+                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $budget->category?->name ?? 'Deleted Category' }}</span>
                     </div>
                     <span class="text-xs font-semibold {{ $budget->percentage >= 90 ? 'text-rose-600' : ($budget->percentage >= 75 ? 'text-amber-500' : 'text-slate-500 dark:text-slate-400') }}">
                         {{ $budget->percentage }}%
@@ -290,8 +290,8 @@
                         <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">{{ $t->date->format('d M') }}</td>
                         <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
                             <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full shrink-0" style="background-color: {{ $t->category->color }}"></div>
-                                <span class="text-sm text-slate-800 dark:text-slate-200">{{ $t->category->name }}</span>
+                                <div class="w-2 h-2 rounded-full shrink-0" style="background-color: {{ $t->category?->color ?? '#94a3b8' }}"></div>
+                                <span class="text-sm text-slate-800 dark:text-slate-200">{{ $t->category?->name ?? ($t->type === 'transfer' ? 'Transfer' : 'Uncategorized') }}</span>
                             </div>
                         </td>
                         <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 hidden sm:table-cell">{{ $t->account->name }}</td>

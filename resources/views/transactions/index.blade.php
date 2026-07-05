@@ -117,7 +117,7 @@
                             @else
                             <span class="inline-flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500">
                                 <span class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700"></span>
-                                Transfer
+                                {{ $t->type === 'transfer' ? 'Transfer' : 'Uncategorized' }}
                             </span>
                             @endif
                         </td>
