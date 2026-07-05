@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
     Route::post('/settings/clear-data', [SettingController::class, 'clearData'])->name('settings.clear-data');
+    Route::post('/settings/exchange-rates', [SettingController::class, 'updateExchangeRate'])->name('settings.exchange-rates.update');
+    Route::delete('/settings/exchange-rates/{rate}', [SettingController::class, 'deleteExchangeRate'])->name('settings.exchange-rates.delete');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

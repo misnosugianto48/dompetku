@@ -13,13 +13,20 @@
             </button>
         </div>
 
-        <form method="POST" action="{{ route('accounts.store') }}" x-show="open" x-transition class="mt-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <form method="POST" action="{{ route('accounts.store') }}" x-show="open" x-transition class="mt-4 grid grid-cols-1 sm:grid-cols-5 gap-3">
             @csrf
             <input type="text" name="name" required placeholder="Account name" class="rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
             <select name="type" required class="rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="bank">Bank</option>
                 <option value="wallet">E-Wallet</option>
                 <option value="cash">Cash</option>
+            </select>
+            <select name="currency" required class="rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="IDR">IDR (Rp)</option>
+                <option value="USD">USD ($)</option>
+                <option value="SGD">SGD (S$)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="JPY">JPY (¥)</option>
             </select>
             <input type="number" name="balance" required min="0" placeholder="Initial balance" class="rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
             <button type="submit" class="px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-xl hover:bg-slate-900 transition">Save</button>
@@ -37,8 +44,11 @@
                             {{ ucfirst($account->type) }}
                         </span>
                     </div>
-                    <h4 class="font-semibold text-slate-800">{{ $account->name }}</h4>
-                    <p class="text-xl font-bold text-slate-900 mt-1">Rp {{ number_format($account->balance, 0, ',', '.') }}</p>
+                    <h4 class="font-semibold text-slate-800 flex items-center gap-2">
+                        {{ $account->name }}
+                        <span class="px-1.5 py-0.5 text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded border border-slate-200 dark:border-slate-700">{{ $account->currency }}</span>
+                    </h4>
+                    <p class="text-xl font-bold text-slate-900 mt-1">{{ $account->formatted_balance }}</p>
                     <p class="text-xs text-slate-400 mt-1">{{ $account->transactions_count }} transactions</p>
                 </div>
                 <div class="flex items-center gap-3">

@@ -10,6 +10,7 @@ use App\Models\Account;
 use App\Models\Asset;
 use App\Models\AssetPriceHistory;
 use App\Models\Category;
+use App\Models\ExchangeRate;
 use App\Models\SavingsGoal;
 use App\Models\Tag;
 use App\Models\Transaction;
@@ -113,7 +114,8 @@ class TransactionController extends Controller
 
             if ($validated['type'] === 'transfer' && ! empty($validated['destination_account_id'])) {
                 $destinationAccount = Account::findOrFail($validated['destination_account_id']);
-                app(ApplyTransactionToAccount::class)->handle($destinationAccount, 'income', (float) $validated['amount']);
+                $convertedAmount = ExchangeRate::convert((float) $validated['amount'], $account->currency, $destinationAccount->currency);
+                app(ApplyTransactionToAccount::class)->handle($destinationAccount, 'income', $convertedAmount);
             }
 
             $assetId = $validated['asset_id'] ?? null;
@@ -183,7 +185,8 @@ class TransactionController extends Controller
             } else {
                 $oldAccount->increment('balance', $oldAmount);
                 if ($transaction->type === 'transfer' && $transaction->destination_account_id) {
-                    $transaction->destinationAccount->decrement('balance', $oldAmount);
+                    $oldConvertedAmount = ExchangeRate::convert($oldAmount, $oldAccount->currency, $transaction->destinationAccount->currency);
+                    $transaction->destinationAccount->decrement('balance', $oldConvertedAmount);
                 }
             }
 
@@ -236,7 +239,8 @@ class TransactionController extends Controller
 
             if ($validated['type'] === 'transfer' && ! empty($validated['destination_account_id'])) {
                 $newDestination = Account::findOrFail($validated['destination_account_id']);
-                app(ApplyTransactionToAccount::class)->handle($newDestination, 'income', (float) $validated['amount']);
+                $convertedAmount = ExchangeRate::convert((float) $validated['amount'], $newAccount->currency, $newDestination->currency);
+                app(ApplyTransactionToAccount::class)->handle($newDestination, 'income', $convertedAmount);
             }
 
             // Apply new asset quantities and prices if applicable
@@ -280,7 +284,8 @@ class TransactionController extends Controller
                 $account->increment('balance', (float) $transaction->amount);
 
                 if ($transaction->type === 'transfer' && $transaction->destination_account_id) {
-                    $transaction->destinationAccount->decrement('balance', (float) $transaction->amount);
+                    $convertedAmount = ExchangeRate::convert((float) $transaction->amount, $account->currency, $transaction->destinationAccount->currency);
+                    $transaction->destinationAccount->decrement('balance', $convertedAmount);
                 }
             }
 

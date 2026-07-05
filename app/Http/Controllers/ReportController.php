@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\Asset;
+use App\Models\ExchangeRate;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -99,7 +100,14 @@ class ReportController extends Controller
 
         $accounts = Account::all();
         $assets = Asset::all();
-        $totalBalance = $accounts->sum('balance');
+        $totalBalance = $accounts->sum(function ($account) {
+            if ($account->currency === 'IDR') {
+                return (float) $account->balance;
+            }
+            $rate = ExchangeRate::where('currency', $account->currency)->first()?->rate ?? 1.0;
+
+            return (float) ($account->balance * $rate);
+        });
         $totalAssetValue = $assets->sum(fn ($a) => $a->quantity * $a->current_price);
 
         return compact(

@@ -26,12 +26,23 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Currency</label>
+                    <select name="currency" required class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="IDR" {{ old('currency', $account->currency) === 'IDR' ? 'selected' : '' }}>IDR (Rp)</option>
+                        <option value="USD" {{ old('currency', $account->currency) === 'USD' ? 'selected' : '' }}>USD ($)</option>
+                        <option value="SGD" {{ old('currency', $account->currency) === 'SGD' ? 'selected' : '' }}>SGD (S$)</option>
+                        <option value="EUR" {{ old('currency', $account->currency) === 'EUR' ? 'selected' : '' }}>EUR (€)</option>
+                        <option value="JPY" {{ old('currency', $account->currency) === 'JPY' ? 'selected' : '' }}>JPY (¥)</option>
+                    </select>
+                </div>
+
+                <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Current Balance</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="text-slate-400 font-medium">Rp</span>
+                            <span class="text-slate-400 font-medium">{{ $account->currency }}</span>
                         </div>
-                        <input type="number" step="any" name="balance" value="{{ old('balance', $account->balance) }}" required class="w-full pl-12 pr-4 py-3 rounded-xl border-slate-200 text-slate-900 font-semibold focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="number" step="any" name="balance" value="{{ old('balance', $account->balance) }}" required class="w-full pl-16 pr-4 py-3 rounded-xl border-slate-200 text-slate-900 font-semibold focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                 </div>
             </div>

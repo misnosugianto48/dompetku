@@ -80,14 +80,14 @@
   - Global CSS-based theme overrides for high-contrast on all views and chart elements
 - [x] **5.2 — Dashboard Date Range Picker**
   - Add interactive date range picker with presets (This Week, This Month, Last Month, etc.)
-- [ ] **5.3 — Mobile Responsive Improvements (Partial)**
+- [x] **5.3 — Mobile Responsive Improvements**
   - [x] Bottom navigation bar for mobile with floating primary Add button
-  - [ ] Swipe-to-delete on transaction rows
-  - [ ] Sticky header with scroll behavior
-- [ ] **5.4 — Multi-Currency Support**
-  - Add `currency` field to accounts
-  - Show amounts in original currency with IDR equivalent
-  - Store and use exchange rates
+  - [x] Swipe-to-delete on transaction rows
+  - [x] Sticky header with scroll behavior
+- [x] **5.4 — Multi-Currency Support**
+  - [x] Add `currency` field to accounts
+  - [x] Show amounts in original currency with IDR equivalent
+  - [x] Store and use exchange rates
 
 ---
 

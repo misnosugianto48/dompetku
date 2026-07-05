@@ -7,6 +7,7 @@ use App\Models\Asset;
 use App\Models\AssetPriceHistory;
 use App\Models\Budget;
 use App\Models\Category;
+use App\Models\ExchangeRate;
 use App\Models\RecurringTransaction;
 use App\Models\SavingsGoal;
 use App\Models\Setting;
@@ -27,7 +28,9 @@ class SettingController extends Controller
         $reportsEnabled = $settings['reports_enabled'] ?? '0';
         $reportsSendDate = $settings['reports_send_date'] ?? 'end_of_month'; // 'end_of_month' or 'start_of_month'
 
-        return view('settings.index', compact('reportsEnabled', 'reportsSendDate'));
+        $exchangeRates = ExchangeRate::all();
+
+        return view('settings.index', compact('reportsEnabled', 'reportsSendDate', 'exchangeRates'));
     }
 
     public function update(Request $request)
@@ -67,11 +70,18 @@ class SettingController extends Controller
             Account::query()->delete();
             Category::query()->delete();
             Tag::query()->delete();
+            ExchangeRate::query()->delete();
 
             // Re-seed default accounts
             Account::create(['name' => 'Cash', 'type' => 'cash', 'balance' => 0, 'icon' => 'banknotes', 'color' => '#10b981']);
             Account::create(['name' => 'Main Bank', 'type' => 'bank', 'balance' => 0, 'icon' => 'building-library', 'color' => '#3b82f6']);
             Account::create(['name' => 'E-Wallet', 'type' => 'wallet', 'balance' => 0, 'icon' => 'wallet', 'color' => '#8b5cf6']);
+
+            // Re-seed default exchange rates
+            ExchangeRate::create(['currency' => 'USD', 'rate' => 15000.0000]);
+            ExchangeRate::create(['currency' => 'SGD', 'rate' => 11000.0000]);
+            ExchangeRate::create(['currency' => 'EUR', 'rate' => 16500.0000]);
+            ExchangeRate::create(['currency' => 'JPY', 'rate' => 100.0000]);
 
             // Re-seed default categories
             Category::create(['name' => 'Salary', 'type' => 'income', 'icon' => 'currency-dollar', 'color' => '#10b981']);
@@ -87,5 +97,33 @@ class SettingController extends Controller
         });
 
         return redirect()->route('settings.index')->with('success', 'All transactional history, assets, budgets, and savings goals have been securely cleared.');
+    }
+
+    public function updateExchangeRate(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'currency' => 'required|string|size:3',
+            'rate' => 'required|numeric|min:0.0001',
+        ]);
+
+        $currency = strtoupper($validated['currency']);
+
+        if ($currency === 'IDR') {
+            return redirect()->route('settings.index')->with('error', 'Base currency IDR rate is fixed at 1.');
+        }
+
+        ExchangeRate::updateOrCreate(
+            ['currency' => $currency],
+            ['rate' => $validated['rate']]
+        );
+
+        return redirect()->route('settings.index')->with('success', 'Exchange rate updated successfully.');
+    }
+
+    public function deleteExchangeRate(ExchangeRate $rate): RedirectResponse
+    {
+        $rate->delete();
+
+        return redirect()->route('settings.index')->with('success', 'Exchange rate deleted.');
     }
 }

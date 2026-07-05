@@ -120,8 +120,8 @@
                         </td>
                         <td class="px-6 py-3 text-sm text-slate-500 hidden sm:table-cell">{{ $t->account->name }}</td>
                         <td class="px-6 py-3 text-sm text-slate-500 hidden md:table-cell max-w-[200px] truncate">{{ $t->description ?: '-' }}</td>
-                        <td class="px-6 py-3 text-sm font-semibold text-right {{ $t->type === 'income' ? 'text-emerald-600' : 'text-rose-600' }}">
-                            {{ $t->type === 'income' ? '+' : '-' }}Rp {{ number_format($t->amount, 0, ',', '.') }}
+                        <td class="px-6 py-3 text-sm font-semibold text-right {{ $t->type === 'income' ? 'text-emerald-600' : ($t->type === 'transfer' ? 'text-indigo-600' : 'text-rose-600') }}">
+                            {{ $t->type === 'income' ? '+' : ($t->type === 'expense' ? '-' : '') }}{{ $t->formatted_amount }}
                         </td>
                     </tr>
                     @empty

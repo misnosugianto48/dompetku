@@ -84,8 +84,8 @@
                 <td>{{ $t->category?->name ?? ($t->type === 'transfer' ? 'Transfer' : 'Uncategorized') }}</td>
                 <td>{{ $t->account->name }}</td>
                 <td>{{ $t->description ?: '-' }}</td>
-                <td class="text-right {{ $t->type === 'income' ? 'green' : 'red' }}">
-                    {{ $t->type === 'income' ? '+' : '-' }}Rp {{ number_format($t->amount, 0, ',', '.') }}
+                <td class="text-right {{ $t->type === 'income' ? 'green' : ($t->type === 'transfer' ? 'indigo' : 'red') }}">
+                    {{ $t->type === 'income' ? '+' : ($t->type === 'expense' ? '-' : '') }}{{ $t->formatted_amount }}
                 </td>
             </tr>
             @empty

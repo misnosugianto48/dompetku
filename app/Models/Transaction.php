@@ -71,4 +71,37 @@ class Transaction extends Model
 
         return Storage::disk(config('filesystems.receipts_disk'))->url($this->receipt_path);
     }
+
+    public function getFormattedAmountAttribute(): string
+    {
+        $account = $this->account;
+        if (! $account) {
+            return 'Rp '.number_format($this->amount, 0, ',', '.');
+        }
+
+        $currency = $account->currency;
+        $symbol = match ($currency) {
+            'USD' => '$',
+            'SGD' => 'S$',
+            'EUR' => '€',
+            'JPY' => '¥',
+            default => 'Rp',
+        };
+
+        if ($currency === 'IDR') {
+            return 'Rp '.number_format($this->amount, 0, ',', '.');
+        }
+
+        // Format in original currency
+        $formatted = $symbol.' '.number_format($this->amount, 2, '.', ',');
+
+        // Find exchange rate
+        $rate = ExchangeRate::where('currency', $currency)->first()?->rate;
+        if ($rate) {
+            $idrEquivalent = (float) $this->amount * (float) $rate;
+            $formatted .= ' (Rp '.number_format($idrEquivalent, 0, ',', '.').')';
+        }
+
+        return $formatted;
+    }
 }

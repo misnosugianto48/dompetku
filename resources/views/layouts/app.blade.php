@@ -97,9 +97,10 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-auto">
+        <div class="flex-1 flex flex-col min-w-0 overflow-auto" x-data="{ scrolled: false }" @scroll.passive="scrolled = $el.scrollTop > 10">
             <!-- Top Bar -->
-            <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
+            <header class="sticky top-0 z-30 transition-all duration-300 border-b"
+                    :class="scrolled ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-slate-200 dark:border-slate-800 shadow-sm' : 'bg-transparent border-transparent'">
                 <div class="px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
                     <div class="flex items-center gap-3">
                         <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 -ml-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800">

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Account;
 use App\Models\Category;
+use App\Models\ExchangeRate;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -25,6 +26,12 @@ class DatabaseSeeder extends Seeder
         Account::create(['name' => 'Cash', 'type' => 'cash', 'balance' => 0, 'icon' => 'banknotes', 'color' => '#10b981']);
         Account::create(['name' => 'Main Bank', 'type' => 'bank', 'balance' => 1000000, 'icon' => 'building-library', 'color' => '#3b82f6']);
         Account::create(['name' => 'E-Wallet', 'type' => 'wallet', 'balance' => 0, 'icon' => 'wallet', 'color' => '#8b5cf6']);
+
+        // Default Exchange Rates
+        ExchangeRate::create(['currency' => 'USD', 'rate' => 15000.0000]);
+        ExchangeRate::create(['currency' => 'SGD', 'rate' => 11000.0000]);
+        ExchangeRate::create(['currency' => 'EUR', 'rate' => 16500.0000]);
+        ExchangeRate::create(['currency' => 'JPY', 'rate' => 100.0000]);
 
         // Income Categories
         Category::create(['name' => 'Salary', 'type' => 'income', 'icon' => 'currency-dollar', 'color' => '#10b981']);

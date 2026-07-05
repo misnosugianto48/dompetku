@@ -20,6 +20,7 @@ class AccountController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|string|in:bank,wallet,cash',
             'balance' => 'required|numeric|min:0',
+            'currency' => 'required|string|size:3',
         ]);
 
         Account::create($validated);
@@ -38,6 +39,7 @@ class AccountController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|string|in:bank,wallet,cash',
             'balance' => 'required|numeric|min:0',
+            'currency' => 'required|string|size:3',
         ]);
 
         $account->update($validated);

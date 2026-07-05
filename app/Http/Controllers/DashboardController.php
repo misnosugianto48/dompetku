@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Asset;
 use App\Models\Budget;
 use App\Models\Category;
+use App\Models\ExchangeRate;
 use App\Models\SavingsGoal;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -25,7 +26,14 @@ class DashboardController extends Controller
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
 
-        $totalBalance = Account::sum('balance');
+        $totalBalance = Account::all()->sum(function ($account) {
+            if ($account->currency === 'IDR') {
+                return (float) $account->balance;
+            }
+            $rate = ExchangeRate::where('currency', $account->currency)->first()?->rate ?? 1.0;
+
+            return (float) ($account->balance * $rate);
+        });
 
         $monthlyIncome = Transaction::where('type', 'income')
             ->whereBetween('date', [$startDate, $endDate])

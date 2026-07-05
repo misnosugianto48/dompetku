@@ -38,6 +38,55 @@
         </form>
     </div>
 
+    <!-- Exchange Rates Card -->
+    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] border border-slate-100 mt-8">
+        <h2 class="text-xl font-bold text-slate-800 mb-2">Exchange Rates Configuration</h2>
+        <p class="text-sm text-slate-500 mb-6 border-b border-slate-100 pb-4">Manage exchange rates relative to IDR (our base currency). Values dictate currency conversion conversions across multi-currency accounts.</p>
+
+        <!-- Current Rates List -->
+        <div class="space-y-3 mb-6">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Conversions</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-100 dark:bg-slate-800/20 dark:border-slate-800/50">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded">IDR</span>
+                        <span class="text-sm font-semibold text-slate-600 dark:text-slate-400">Base Currency</span>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 dark:text-white">1.0000 IDR</span>
+                </div>
+                @foreach($exchangeRates as $rate)
+                <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-100 dark:bg-slate-800/20 dark:border-slate-800/50">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded">{{ $rate->currency }}</span>
+                        <span class="text-sm font-semibold text-slate-600 dark:text-slate-400">1 {{ $rate->currency }} =</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold text-slate-800 dark:text-white">{{ number_format($rate->rate, 4, '.', ',') }} IDR</span>
+                        <form action="{{ route('settings.exchange-rates.delete', $rate) }}" method="POST" onsubmit="return confirm('Delete exchange rate for {{ $rate->currency }}?');" class="inline">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-slate-400 hover:text-rose-500 transition">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Add/Edit Form -->
+        <form action="{{ route('settings.exchange-rates.update') }}" method="POST" class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
+            @csrf
+            <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input type="text" name="currency" required placeholder="Currency Code (e.g. USD)" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 py-3 bg-white" minlength="3" maxlength="3">
+                <input type="number" step="any" name="rate" required placeholder="Rate in IDR (e.g. 15000)" class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 py-3 bg-white" min="0.0001">
+            </div>
+            <button type="submit" class="px-5 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm tracking-wide uppercase rounded-xl transition whitespace-nowrap">
+                Add / Update Rate
+            </button>
+        </form>
+    </div>
+
     <!-- Danger Zone Card -->
     <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] border border-rose-100/50 mt-8">
         <h2 class="text-xl font-bold text-rose-800 mb-6 flex items-center gap-2">
